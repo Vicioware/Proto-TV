@@ -34,13 +34,17 @@
       flex-direction: column;
       align-items: center;
     }
-    .site-logo {
+    .site-logo-link { /* Estilo para el enlace del logo */
         position: absolute;
         top: 20px;
         left: 20px;
+        z-index: 10;
+        display: block; /* Asegurar que el enlace ocupe el espacio de la imagen */
+    }
+    .site-logo-link img { /* Estilo para la imagen dentro del enlace */
         height: 60px;
         width: auto;
-        z-index: 10;
+        display: block; /* Evitar espacio extra debajo de la imagen */
     }
     .back-button {
         position: absolute;
@@ -52,17 +56,17 @@
         width: 30px;
         height: auto;
         display: block;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.20)); /* Sombra */
+        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.20));
     }
     .channel-title-img {
         display: block;
         max-width: 300px;
         width: 70%;
         height: auto;
-        margin: -60px auto 20px auto; /* Margen superior negativo para subirlo */
+        margin: -60px auto 20px auto;
         position: relative;
         z-index: 1;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.20)); /* Sombra añadida (igual que back.png) */
+        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.20));
     }
     .player-container {
         max-width: 850px;
@@ -100,13 +104,15 @@
   </style>
 </head>
 <body>
-  <img src="../img/logo.png" alt="ONLiVE_logo" class="site-logo">
+  <!-- Logo envuelto en un enlace -->
+  <a href="../index.html" class="site-logo-link">
+    <img src="../img/logo.png"> <!-- alt eliminado -->
+  </a>
   <a href="../index.html" class="back-button">
-    <img src="../img/back.png">
+    <img src="../img/back.png"> <!-- alt eliminado -->
   </a>
 
-  <!-- Asegúrate que el src apunte a directv_title.png -->
-  <img src="../img/directv_title.png" class="channel-title-img">
+  <img src="../img/directv_title.png" class="channel-title-img"> <!-- alt eliminado -->
 
   <div class="player-container">
     <!-- <iframe src="URL_DEL_STREAM_DIRECTV" title="DirecTV Sports Stream"></iframe> -->
