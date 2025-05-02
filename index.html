@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reproductor de Streaming (Sandbox Opcional)</title> 
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; 
+      background-color: #f0f2f5; 
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+    h1 {
+      text-align: center;
+      color: #1d2129; 
+    }
+    #form-container {
+      max-width: 700px; 
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+      border: 1px solid #dddfe2; 
+    }
+    label {
+      display: block;
+      margin-bottom: 8px; 
+      font-weight: 600; 
+      color: #4b4f56;
+    }
+    input[type="text"] { 
+      width: 100%; 
+      box-sizing: border-box; 
+      padding: 10px 12px; 
+      margin-bottom: 15px; 
+      border: 1px solid #ccd0d5;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    input[type="text"]:focus { 
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        outline: none;
+    }
+    /* Estilos para el contenedor del checkbox */
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px; /* Espacio antes del botón */
+        cursor: pointer;
+        user-select: none; /* Evitar seleccionar texto del label */
+    }
+    .checkbox-container input[type="checkbox"] {
+        margin-right: 10px;
+        width: 1.1em;
+        height: 1.1em;
+        cursor: pointer;
+    }
+    .checkbox-container label {
+        margin-bottom: 0; /* Reset margin for inline label */
+        font-weight: normal; /* Peso normal para el label del checkbox */
+        color: #4b4f56;
+    }
+
+    button {
+      display: block; 
+      width: 100%; 
+      padding: 12px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem; 
+      font-weight: 600;
+      transition: background-color 0.2s ease; 
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #player-container {
+      max-width: 850px; 
+      margin: 30px auto;
+      position: relative; 
+      padding-top: 56.25%; /* 16:9 */
+      height: 0; 
+      overflow: hidden; 
+      background-color: #1c1e21; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .video-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none; 
+    }
+     /* Estilo para mensajes de error/info en el contenedor */
+    #player-container p {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #adb5bd;
+        text-align: center;
+        padding: 20px;
+        margin: 0;
+    }
+    #player-container p.error-message {
+        color: #f8d7da; /* Color para errores */
+        background-color: rgba(220, 53, 69, 0.1); /* Fondo semitransparente */
+        border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Reproductor de Streaming</h1>
+  <div id="form-container">
+    <label for="src">URL o código &lt;iframe&gt; del video:</label>
+    <input type="text" id="src" placeholder="Pega la URL directa o el código iframe completo aquí">
+
+    <div class="checkbox-container">
+      <input type="checkbox" id="sandbox-toggle" checked>
+      <label for="sandbox-toggle">Activar Sandbox (Recomendado: Bloquea popups y mejora la seguridad)</label>
+    </div>
+
+    <button id="add-btn">Cargar Video</button> 
+  </div>
+
+  <div id="player-container">
+     <p>El video se cargará aquí.</p> 
+  </div>
+
+  <script>
+    const addButton = document.getElementById('add-btn');
+    const srcInput = document.getElementById('src');
+    const container = document.getElementById('player-container');
+    const sandboxToggle = document.getElementById('sandbox-toggle'); // **Obtener el checkbox**
+
+    addButton.addEventListener('click', function() {
+      const srcValue = srcInput.value.trim();
+      const sandboxEnabled = sandboxToggle.checked; // **Verificar estado del checkbox**
+
+      if (!srcValue) {
+        alert('Por favor, ingresa la URL o el código iframe.');
+        srcInput.focus(); 
+        return;
+      }
+
+      // Limpiar contenedor anterior y mostrar mensaje de carga
+      container.innerHTML = '<p>Cargando video...</p>'; 
+
+      let iframe;
+      
+      // Usar setTimeout para permitir que el mensaje "Cargando..." se renderice
+      // antes de iniciar el procesamiento potencialmente bloqueante del iframe.
+      setTimeout(() => {
+          try {
+              // Detectar si es un código iframe completo
+              if (srcValue.toLowerCase().includes('<iframe')) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(srcValue, 'text/html');
+                iframe = doc.querySelector('iframe');
+                
+                if (!iframe) {
+                    throw new Error('El código iframe proporcionado no contiene una etiqueta <iframe> válida.');
+                }
+                iframe.style.position = 'absolute';
+                iframe.style.top = '0';
+                iframe.style.left = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+
+              } else {
+                // Es una URL directa
+                iframe = document.createElement('iframe');
+                 try {
+                    new URL(srcValue); 
+                    iframe.src = srcValue;
+                 } catch (e) {
+                    throw new Error('La URL proporcionada no parece ser válida.');
+                 }
+              }
+
+              // --- Atributos Esenciales y Opcionales ---
+              iframe.classList.add('video-frame'); 
+              iframe.setAttribute('title', 'Reproductor de Video'); 
+              iframe.loading = 'lazy'; 
+              iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; 
+              iframe.allowFullscreen = true;
+              
+              // **Aplicar Sandbox condicionalmente**
+              if (sandboxEnabled) {
+                  iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-presentation allow-modals';
+              } 
+              // Si sandboxEnabled es false, simplemente no se añade el atributo 'sandbox'
+
+              // Limpiar el contenedor AHORA antes de añadir el iframe real
+              container.innerHTML = ''; 
+              container.appendChild(iframe); 
+
+          } catch (error) {
+              console.error("Error al procesar la entrada:", error);
+              // Mostrar error en el contenedor
+              container.innerHTML = `<p class="error-message">Error: ${error.message}<br>Verifica la URL o el código.</p>`; 
+              // Opcional: también mostrar alert
+              // alert(`Error: ${error.message}`);
+          }
+      }, 50); // Un pequeño delay (50ms) es usualmente suficiente
+
+    });
+  </script>
+</body>
+</html>
