@@ -7,7 +7,8 @@
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      background-color: #f0f2f5;
+      /* background-color: #f0f2f5; */ /* Eliminado color sólido */
+      background: linear-gradient(to bottom, #b6359c, #ef0a6a); /* Añadido degradado vertical */
       margin: 0;
       padding: 40px 20px; /* Más padding vertical */
       line-height: 1.5;
@@ -18,7 +19,8 @@
     }
     h1 {
       text-align: center;
-      color: #1d2129;
+      /* color: #1d2129; */ /* Color oscuro anterior */
+      color: #fff; /* Cambiado a blanco para mejor contraste */
       margin-bottom: 40px; /* Más espacio debajo del título */
     }
     #channel-grid {
@@ -36,32 +38,28 @@
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Transición suave */
       border-radius: 12px; /* Bordes redondeados */
       overflow: hidden; /* Asegurar que la imagen no se salga del borde redondeado */
-      background-color: #fff; /* Fondo blanco para cada item */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+      /* background-color: #fff; */ /* Eliminado fondo blanco para transparencia PNG */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra sutil ligeramente más oscura para contraste */
       display: flex; /* Para alinear imagen y posible texto futuro */
       flex-direction: column;
     }
     .channel-item:hover {
       transform: translateY(-5px); /* Efecto levantar al pasar el ratón */
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12); /* Sombra más pronunciada */
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada en hover */
     }
     .channel-item img {
       display: block;
       width: 200px; /* Ancho fijo para las imágenes */
       height: 200px; /* Alto fijo para las imágenes */
-      object-fit: cover; /* Escalar la imagen manteniendo la relación de aspecto, recortando si es necesario */
+      object-fit: cover; /* Escalar la imagen manteniendo la relación de aspecto */
+      border-radius: 12px; /* Asegurar bordes redondeados en la imagen misma si es necesario */
     }
     /* Puedes añadir un título debajo de cada imagen si quieres */
     /*
     .channel-item span {
         padding: 10px;
         font-weight: 500;
-        color: #4b4f56;
-    }
-    */
-
-    /* Eliminamos estilos no necesarios del formulario y reproductor */
-    /* #form-container, #player-container, label, input, button, .video-frame, etc. */
+        color: #fff; /* Texto blanco si decides añadirlo */
 
   </style>
 </head>
@@ -83,9 +81,6 @@
     </a>
     <!-- Añade más canales aquí si es necesario -->
   </div>
-
-  <!-- Eliminamos el script anterior relacionado con el formulario -->
-  <!-- <script> ... </script> -->
 
 </body>
 </html>
