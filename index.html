@@ -41,27 +41,34 @@
       width: 100%;
     }
     .channel-item {
-      text-decoration: none;
-      color: inherit;
+      text-decoration: none; /* Quitar subrayado del enlace */
+      color: inherit; /* Heredar color de texto */
       text-align: center;
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      border-radius: 12px;
-      overflow: hidden;
+      transition: transform 0.2s ease-in-out; /* Transición solo para transform */
+      /* border-radius: 12px; */ /* Eliminado borde redondeado del contenedor */
+      /* overflow: hidden; */ /* Eliminado overflow hidden */
       /* background-color: #fff; */ /* Fondo transparente */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      display: flex;
+      /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */ /* Eliminada sombra */
+      display: flex; /* Para alinear imagen y posible texto futuro */
       flex-direction: column;
     }
     .channel-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-5px); /* Efecto levantar al pasar el ratón */
+      /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); */ /* Eliminada sombra en hover */
     }
     .channel-item img {
       display: block;
       width: 200px;
       height: 200px;
       object-fit: cover;
-      border-radius: 12px;
+      border-radius: 12px; /* Aplicar borde redondeado directamente a la imagen */
+      /* Añadimos una sombra sutil a la imagen misma para separarla un poco */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: box-shadow 0.2s ease-in-out; /* Transición para la sombra de la imagen */
+    }
+    .channel-item:hover img {
+        /* Opcional: intensificar sombra de la imagen en hover */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     }
     /*
     .channel-item span {
