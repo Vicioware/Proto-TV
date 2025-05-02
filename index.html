@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ON LiVE</title> <!-- Título actualizado -->
+  <link rel="icon" href="img/icon.png" type="image/png"> <!-- Añadido Favicon -->
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -22,7 +23,7 @@
         position: absolute;
         top: 20px; /* Espacio desde arriba */
         left: 20px; /* Espacio desde la izquierda */
-        height: 40px; /* Altura deseada para el logo, ajusta según necesidad */
+        height: 40px; /* Altura deseada para el logo (ajustada para nueva imagen) */
         width: auto; /* Ancho automático para mantener proporción */
         z-index: 10; /* Asegurar que esté por encima de otros elementos si es necesario */
     }
@@ -48,13 +49,13 @@
       /* border-radius: 12px; */ /* Eliminado borde redondeado del contenedor */
       /* overflow: hidden; */ /* Eliminado overflow hidden */
       /* background-color: #fff; */ /* Fondo transparente */
-      /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */ /* Eliminada sombra */
+      /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */ /* Eliminada sombra del contenedor */
       display: flex; /* Para alinear imagen y posible texto futuro */
       flex-direction: column;
     }
     .channel-item:hover {
       transform: translateY(-5px); /* Efecto levantar al pasar el ratón */
-      /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); */ /* Eliminada sombra en hover */
+      /* box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); */ /* Eliminada sombra en hover del contenedor */
     }
     .channel-item img {
       display: block;
@@ -62,21 +63,10 @@
       height: 200px;
       object-fit: cover;
       border-radius: 12px; /* Aplicar borde redondeado directamente a la imagen */
-      /* Añadimos una sombra sutil a la imagen misma para separarla un poco */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      transition: box-shadow 0.2s ease-in-out; /* Transición para la sombra de la imagen */
+      /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */ /* Eliminada sombra de la imagen */
+      /* transition: box-shadow 0.2s ease-in-out; */ /* Eliminada transición de sombra */
     }
-    .channel-item:hover img {
-        /* Opcional: intensificar sombra de la imagen en hover */
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    }
-    /*
-    .channel-item span {
-        padding: 10px;
-        font-weight: 500;
-        color: #fff;
-    }
-    */
+    
   </style>
 </head>
 <body>
