@@ -38,25 +38,25 @@
         position: absolute;
         top: 20px;
         left: 20px;
-        height: 60px;
-        width: auto;
-        z-index: 10;
+        height: 60px; /* No cambiar */
+        width: auto; /* No cambiar */
+        z-index: 10; /* No cambiar */
     }
     .back-button {
-        position: absolute;
-        top: 100px; /* Ajustar posición vertical */
-        left: 20px; /* Ajustar posición horizontal */
-        z-index: 10;
+        position: absolute; /* No cambiar */
+        top: 130px; /* No cambiar */
+        left: 200px; /* No cambiar */
+        z-index: 10; /* No cambiar */
     }
     .back-button img {
-        width: 30px;
-        height: auto;
-        display: block;
+        width: 30px; /* No cambiar */
+        height: auto; /* No cambiar */
+        display: block; /* No cambiar */
     }
     .channel-title-img {
         display: block; /* Para poder aplicar margen auto */
-        max-width: 400px; /* Ancho máximo, se ajustará si es más pequeño */
-        width: 80%; /* Ocupar un porcentaje del ancho disponible */
+        max-width: 300px; /* Ancho máximo ajustado */
+        width: 70%; /* Ocupar un porcentaje del ancho disponible */
         height: auto; /* Mantener proporción */
         margin: 0 auto 20px auto; /* Centrar horizontalmente y añadir margen inferior */
     }
@@ -91,20 +91,7 @@
         height: 100%;
         font-family: sans-serif; /* Usar fuente estándar para el placeholder */
     }
-    .footer-link-container { /* Contenedor para el enlace inferior */
-        text-align: center;
-        margin-top: 30px;
-        width: 100%;
-    }
-    .footer-link { /* Estilo del enlace inferior */
-        color: #fff;
-        text-decoration: none;
-        font-family: 'Azonix', sans-serif;
-        background-color: rgba(0,0,0,0.3);
-        padding: 10px 20px;
-        border-radius: 5px;
-        display: inline-block; /* Para que el padding funcione bien */
-    }
+    /* Se elimina el contenedor y el estilo del enlace inferior */
 
   </style>
 </head>
@@ -114,14 +101,16 @@
     <img src="../img/back.png" alt="Volver">
   </a>
 
+  <!-- Imagen del canal añadida aquí -->
+  <img src="../img/directv_sports.png" alt="DirecTV Sports Logo" class="channel-title-img">
+
   <div class="player-container">
+    <!-- Aquí puedes poner el iframe real cuando lo tengas -->
     <!-- <iframe src="URL_DEL_STREAM_DIRECTV" title="DirecTV Sports Stream"></iframe> -->
     <p class="placeholder-text">Aquí va el reproductor de DirecTV Sports</p>
   </div>
 
-  <div class="footer-link-container">
-    <a href="../index.html" class="footer-link">Volver</a>
-  </div>
+  <!-- Se elimina el div del enlace "Volver" -->
 
 </body>
 </html>
