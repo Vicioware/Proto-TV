@@ -25,34 +25,45 @@
       background: linear-gradient(to bottom, #b6359c, #ef0a6a);
       margin: 0;
       padding: 40px 20px;
-      padding-top: 120px; /* Espacio suficiente arriba */
+      padding-top: 100px; /* Ajustar padding superior si es necesario */
       line-height: 1.5;
       min-height: 100vh;
       position: relative;
       box-sizing: border-box;
+      display: flex; /* Usar flex para centrar contenido */
+      flex-direction: column; /* Alinear verticalmente */
+      align-items: center; /* Centrar horizontalmente */
     }
     .site-logo {
         position: absolute;
         top: 20px;
         left: 20px;
-        height: 60px; /* Logo un poco más grande */
+        height: 60px;
         width: auto;
         z-index: 10;
     }
     .back-button {
         position: absolute;
-        top: 130px; /* Posición vertical ajustada (cerca del iframe) */
-        left: 200px;  /* Posición horizontal ajustada (cerca del iframe) */
+        top: 100px; /* Ajustar posición vertical */
+        left: 20px; /* Ajustar posición horizontal */
         z-index: 10;
     }
     .back-button img {
-        width: 30px; /* Imagen de volver más pequeña */
+        width: 30px;
         height: auto;
         display: block;
     }
+    .channel-title-img {
+        display: block; /* Para poder aplicar margen auto */
+        max-width: 400px; /* Ancho máximo, se ajustará si es más pequeño */
+        width: 80%; /* Ocupar un porcentaje del ancho disponible */
+        height: auto; /* Mantener proporción */
+        margin: 0 auto 20px auto; /* Centrar horizontalmente y añadir margen inferior */
+    }
     .player-container {
         max-width: 850px;
-        margin: 0 auto;
+        width: 100%; /* Ocupar todo el ancho disponible hasta max-width */
+        margin: 0 auto; /* Centrado horizontalmente */
         position: relative;
         padding-top: 56.25%; /* 16:9 */
         height: 0;
