@@ -34,17 +34,17 @@
       flex-direction: column;
       align-items: center;
     }
-    .site-logo-link { /* Estilo para el enlace del logo */
+    .site-logo-link {
         position: absolute;
         top: 20px;
         left: 20px;
         z-index: 10;
-        display: block; /* Asegurar que el enlace ocupe el espacio de la imagen */
+        display: block;
     }
-    .site-logo-link img { /* Estilo para la imagen dentro del enlace */
+    .site-logo-link img {
         height: 60px;
         width: auto;
-        display: block; /* Evitar espacio extra debajo de la imagen */
+        display: block;
     }
     .back-button {
         position: absolute;
@@ -66,7 +66,7 @@
         margin: -60px auto 20px auto;
         position: relative;
         z-index: 1;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.20));
+        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
     }
     .player-container {
         max-width: 850px;
@@ -89,33 +89,26 @@
         height: 100%;
         border: none;
     }
-    .placeholder-text {
-        color: white;
-        text-align: center;
-        padding-top: 20%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        font-family: sans-serif;
+    .placeholder-text { /* Eliminado ya que hay un iframe real */
+        /* Estilos eliminados */
     }
 
   </style>
 </head>
 <body>
-  <!-- Logo envuelto en un enlace -->
   <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png"> <!-- alt eliminado -->
+    <img src="../img/logo.png">
   </a>
   <a href="../index.html" class="back-button">
-    <img src="../img/back.png"> <!-- alt eliminado -->
+    <img src="../img/back.png">
   </a>
 
-  <img src="../img/directv_title.png" class="channel-title-img"> <!-- alt eliminado -->
+  <img src="../img/directv_title.png" class="channel-title-img">
 
   <div class="player-container">
-    <iframe src="https://elcanaldeportivo.com/directvsports.php" title="DirecTV Sports Stream"></iframe>
+    <!-- Se añade allowfullscreen al iframe -->
+    <iframe src="https://elcanaldeportivo.com/directvsports.php" allowfullscreen></iframe>
+    <!-- Se elimina el texto placeholder -->
   </div>
 
 </body>
