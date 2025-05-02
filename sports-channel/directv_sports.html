@@ -24,15 +24,15 @@
       font-family: 'NorthSeanoDemo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       background: linear-gradient(to bottom, #b6359c, #ef0a6a);
       margin: 0;
-      padding: 40px 20px;
-      padding-top: 100px; /* Ajustar padding superior si es necesario */
+      padding: 20px; /* Reducir padding general */
+      padding-top: 100px; /* Mantener espacio para logo y botón back */
       line-height: 1.5;
       min-height: 100vh;
       position: relative;
       box-sizing: border-box;
-      display: flex; /* Usar flex para centrar contenido */
-      flex-direction: column; /* Alinear verticalmente */
-      align-items: center; /* Centrar horizontalmente */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .site-logo {
         position: absolute;
@@ -52,18 +52,22 @@
         width: 30px; /* No cambiar */
         height: auto; /* No cambiar */
         display: block; /* No cambiar */
+        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.5)); /* Sombra añadida */
     }
     .channel-title-img {
-        display: block; /* Para poder aplicar margen auto */
-        max-width: 300px; /* Ancho máximo ajustado */
-        width: 70%; /* Ocupar un porcentaje del ancho disponible */
-        height: auto; /* Mantener proporción */
-        margin: 0 auto 20px auto; /* Centrar horizontalmente y añadir margen inferior */
+        display: block;
+        max-width: 300px;
+        width: 70%;
+        height: auto;
+        /* Ajustar margen para alinear verticalmente con el logo */
+        margin: -60px auto 20px auto; /* Margen superior negativo para subirlo */
+        position: relative; /* Para asegurar que esté sobre el flujo normal si es necesario */
+        z-index: 1; /* Detrás de los botones si se superponen */
     }
     .player-container {
         max-width: 850px;
-        width: 100%; /* Ocupar todo el ancho disponible hasta max-width */
-        margin: 0 auto; /* Centrado horizontalmente */
+        width: 100%;
+        margin: 0 auto;
         position: relative;
         padding-top: 56.25%; /* 16:9 */
         height: 0;
@@ -71,6 +75,7 @@
         background-color: #000;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 0; /* Asegurar que esté detrás de elementos superpuestos */
     }
     .player-container iframe {
         position: absolute;
@@ -80,7 +85,7 @@
         height: 100%;
         border: none;
     }
-    .placeholder-text { /* Estilo para el texto temporal */
+    .placeholder-text {
         color: white;
         text-align: center;
         padding-top: 20%;
@@ -89,9 +94,8 @@
         left: 0;
         width: 100%;
         height: 100%;
-        font-family: sans-serif; /* Usar fuente estándar para el placeholder */
+        font-family: sans-serif;
     }
-    /* Se elimina el contenedor y el estilo del enlace inferior */
 
   </style>
 </head>
@@ -102,15 +106,13 @@
   </a>
 
   <!-- Imagen del canal añadida aquí -->
-  <img src="../img/directv_title.png" alt="DirecTV Sports Logo" class="channel-title-img">
+  <img src="../img/directv_sports.png" alt="DirecTV Sports Logo" class="channel-title-img">
 
   <div class="player-container">
     <!-- Aquí puedes poner el iframe real cuando lo tengas -->
     <!-- <iframe src="URL_DEL_STREAM_DIRECTV" title="DirecTV Sports Stream"></iframe> -->
     <p class="placeholder-text">Aquí va el reproductor de DirecTV Sports</p>
   </div>
-
-  <!-- Se elimina el div del enlace "Volver" -->
 
 </body>
 </html>
