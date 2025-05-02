@@ -7,77 +7,85 @@
   <style>
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      /* background-color: #f0f2f5; */ /* Eliminado color sólido */
-      background: linear-gradient(to bottom, #b6359c, #ef0a6a); /* Añadido degradado vertical */
+      background: linear-gradient(to bottom, #b6359c, #ef0a6a); /* Degradado vertical */
       margin: 0;
-      padding: 40px 20px; /* Más padding vertical */
+      padding: 40px 20px;
+      padding-top: 80px; /* Aumentar padding superior para dejar espacio al logo */
       line-height: 1.5;
-      display: flex; /* Centrar contenido */
+      display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      position: relative; /* Necesario para posicionar el logo absolutamente respecto al body */
+    }
+    .site-logo {
+        position: absolute;
+        top: 20px; /* Espacio desde arriba */
+        left: 20px; /* Espacio desde la izquierda */
+        height: 40px; /* Altura deseada para el logo, ajusta según necesidad */
+        width: auto; /* Ancho automático para mantener proporción */
+        z-index: 10; /* Asegurar que esté por encima de otros elementos si es necesario */
     }
     h1 {
       text-align: center;
-      /* color: #1d2129; */ /* Color oscuro anterior */
-      color: #fff; /* Cambiado a blanco para mejor contraste */
-      margin-bottom: 40px; /* Más espacio debajo del título */
+      color: #fff; /* Blanco para contraste */
+      margin-bottom: 40px;
+      margin-top: 0; /* Ajustar margen superior del título */
     }
     #channel-grid {
-      display: flex; /* Organizar imágenes en fila */
-      justify-content: center; /* Centrar las imágenes horizontalmente */
-      gap: 30px; /* Espacio entre imágenes */
-      flex-wrap: wrap; /* Permitir que las imágenes pasen a la siguiente línea si no caben */
-      max-width: 900px; /* Ancho máximo del contenedor */
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      max-width: 900px;
       width: 100%;
     }
     .channel-item {
-      text-decoration: none; /* Quitar subrayado del enlace */
-      color: inherit; /* Heredar color de texto */
+      text-decoration: none;
+      color: inherit;
       text-align: center;
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Transición suave */
-      border-radius: 12px; /* Bordes redondeados */
-      overflow: hidden; /* Asegurar que la imagen no se salga del borde redondeado */
-      /* background-color: #fff; */ /* Eliminado fondo blanco para transparencia PNG */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra sutil ligeramente más oscura para contraste */
-      display: flex; /* Para alinear imagen y posible texto futuro */
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      border-radius: 12px;
+      overflow: hidden;
+      /* background-color: #fff; */ /* Fondo transparente */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
       flex-direction: column;
     }
     .channel-item:hover {
-      transform: translateY(-5px); /* Efecto levantar al pasar el ratón */
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Sombra más pronunciada en hover */
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     }
     .channel-item img {
       display: block;
-      width: 200px; /* Ancho fijo para las imágenes */
-      height: 200px; /* Alto fijo para las imágenes */
-      object-fit: cover; /* Escalar la imagen manteniendo la relación de aspecto */
-      border-radius: 12px; /* Asegurar bordes redondeados en la imagen misma si es necesario */
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
     }
-    /* Puedes añadir un título debajo de cada imagen si quieres */
     /*
     .channel-item span {
         padding: 10px;
         font-weight: 500;
-        color: #fff; /* Texto blanco si decides añadirlo */
-
+        color: #fff;
+    }
+    */
   </style>
 </head>
 <body>
+  <img src="img/logo.png" alt="Logo Sitio" class="site-logo">
+
   <h1>Elige un Canal para Ver en Vivo</h1>
 
   <div id="channel-grid">
     <a href="directv_sports.html" class="channel-item">
       <img src="img/directv_sports.png" alt="DirecTV Sports">
-      <!-- <span>DirecTV Sports</span> Opcional: nombre debajo -->
     </a>
     <a href="tnt_sports.html" class="channel-item">
       <img src="img/tnt_sports.png" alt="TNT Sports">
-      <!-- <span>TNT Sports</span> -->
     </a>
     <a href="espn.html" class="channel-item">
       <img src="img/espn.png" alt="ESPN">
-      <!-- <span>ESPN</span> -->
     </a>
     <!-- Añade más canales aquí si es necesario -->
   </div>
