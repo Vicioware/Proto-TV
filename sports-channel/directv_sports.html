@@ -48,8 +48,8 @@
     }
     .back-button {
         position: absolute;
-        top: 190px;
-        left: 200px;
+        top: 110px;
+        left: 30px;
         z-index: 10;
     }
     .back-button img {
@@ -63,7 +63,7 @@
         max-width: 300px;
         width: 70%;
         height: auto;
-        margin: -60px auto 20px auto;
+        margin: -40px auto 20px auto;
         position: relative;
         z-index: 1;
         filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
@@ -89,7 +89,50 @@
         height: 100%;
         border: none;
     }
+    @media (max-width: 900px) {
+        .player-container {
+            max-width: 95%; /* Usa porcentaje para adaptarse */
+        }
+        .back-button {
+            top: 100px;
+            left: 25px;
+        }
+         .channel-title-img {
+            max-width: 250px; /* Título un poco más pequeño */
+            margin: -30px auto 15px auto;
+        }
+    }
 
+    /* Para móviles */
+    @media (max-width: 600px) {
+        body {
+            padding: 15px;
+            padding-top: 80px; /* Menos padding superior */
+        }
+        .site-logo-link {
+            top: 15px;
+            left: 15px;
+        }
+        .site-logo-link img {
+            height: 50px; /* Logo más pequeño */
+        }
+        .back-button {
+            top: 85px; /* Ajusta posición del botón atrás */
+            left: 15px;
+        }
+        .back-button img {
+            width: 25px; /* Botón atrás más pequeño */
+        }
+        .channel-title-img {
+            max-width: 200px; /* Título más pequeño */
+            width: 60%;
+            margin: -20px auto 10px auto; /* Ajusta márgenes */
+        }
+        .player-container {
+            max-width: 100%; /* Ocupa todo el ancho */
+            border-radius: 4px; /* Menos redondeo */
+        }
+    }
   </style>
 </head>
 <body>
