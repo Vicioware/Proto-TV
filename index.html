@@ -33,20 +33,12 @@
       min-height: 100vh;
       position: relative;
     }
-    .site-logo-link {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        z-index: 10;
-        display: block; /* Añadido */
-        /* height: 40px; Eliminado */
-        /* width: auto; Eliminado */
-    }
-    /* Nueva regla para la imagen dentro del enlace */
-    .site-logo-link img {
-        height: 60px; /* Ajustado a 60px */
-        width: auto;
-        display: block;
+    .site-logo {
+      display: block;
+      margin: 0 auto 40px auto; /* Mantiene el centrado y margen inferior */
+      height: 60px; /* Ajusta la altura a 60px */
+      width: auto;
+      filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10)); /* Mantiene la sombra */
     }
     h1 {
       font-family: 'Azonix', sans-serif;
