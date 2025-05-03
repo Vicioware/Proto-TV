@@ -39,10 +39,13 @@
         top: 20px;
         left: 20px;
         z-index: 10;
-        display: block;
+        display: block; /* Añadido */
+        /* height: 40px; Eliminado */
+        /* width: auto; Eliminado */
     }
+    /* Nueva regla para la imagen dentro del enlace */
     .site-logo-link img {
-        height: 60px;
+        height: 60px; /* Ajustado a 60px */
         width: auto;
         display: block;
     }
@@ -93,8 +96,8 @@
   </style>
 </head>
 <body>
-  <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png">
+  <a href="index.html" class="site-logo-link">
+    <img src="img/logo.png">
   </a>
   <a href="../index.html" class="back-button">
     <img src="../img/back.png">
