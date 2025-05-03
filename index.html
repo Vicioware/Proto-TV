@@ -33,13 +33,20 @@
       min-height: 100vh;
       position: relative;
     }
-    .site-logo {
+    .site-logo-link {
         position: absolute;
         top: 20px;
         left: 20px;
-        height: 40px;
-        width: auto;
         z-index: 10;
+        display: block; /* Añadido */
+        /* height: 40px; Eliminado */
+        /* width: auto; Eliminado */
+    }
+    /* Nueva regla para la imagen dentro del enlace */
+    .site-logo-link img {
+        height: 60px; /* Ajustado a 60px */
+        width: auto;
+        display: block;
     }
     h1 {
       font-family: 'Azonix', sans-serif;
