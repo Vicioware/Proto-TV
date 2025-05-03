@@ -25,7 +25,7 @@
       background: linear-gradient(to bottom, #b6359c, #ef0a6a);
       margin: 0;
       padding: 40px 20px;
-      padding-top: 80px;
+      padding-top: 100px;
       line-height: 1.5;
       display: flex;
       flex-direction: column;
@@ -77,8 +77,8 @@
     }
     .channel-item img {
       display: block;
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       object-fit: cover;
       border-radius: 12px;
     }
@@ -91,6 +91,62 @@
         background-color: #fff; /* Fondo blanco para el iframe */
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
     }
+    @media (max-width: 940px) {
+        #channel-grid {
+            max-width: 650px; /* Ajusta el ancho máximo */
+            gap: 20px;
+        }
+        .channel-item img {
+            width: 150px;
+            height: 150px;
+        }
+        #agenda-iframe {
+            max-width: 650px;
+        }
+    }
+
+    /* Para móviles */
+    @media (max-width: 700px) {
+        body {
+            padding: 20px 15px;
+            padding-top: 90px; /* Ajusta el padding superior */
+        }
+        .site-logo-link {
+            top: 15px;
+            left: 15px;
+        }
+        .site-logo-link img {
+            height: 50px; /* Logo más pequeño en móviles */
+        }
+        h1 {
+            font-size: 1.8em; /* Reduce tamaño del título */
+            margin-bottom: 30px;
+        }
+        #channel-grid {
+            max-width: 100%;
+            gap: 15px;
+            justify-content: space-around; /* Mejor distribución en móviles */
+        }
+        .channel-item img {
+            width: 120px; /* Imágenes más pequeñas */
+            height: 120px;
+        }
+        #agenda-iframe {
+            max-width: 100%;
+            height: 450px; /* Menos altura en móviles */
+        }
+    }
+
+     /* Ajuste adicional para pantallas muy pequeñas */
+     @media (max-width: 400px) {
+        .channel-item img {
+            width: 100px;
+            height: 100px;
+        }
+         #channel-grid {
+            gap: 10px;
+        }
+     }
   </style>
 </head>
 <body>
