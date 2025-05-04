@@ -88,7 +88,8 @@
 
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        ['Partido', 'Horario', 'Canales'].forEach(txt => {
+        // Encabezado modificado para indicar la zona horaria
+        ['Partido', 'Horario (GMT-3)', 'Canales'].forEach(txt => {
           const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
         });
         thead.appendChild(headRow);
@@ -130,7 +131,7 @@
 
       } catch (err) {
         document.getElementById('agenda-container').innerHTML = '<p>Error al cargar la agenda.</p>';
-        console.error(err); // Mantenemos el console.error para errores
+        console.error(err);
       }
     })();
   </script>
