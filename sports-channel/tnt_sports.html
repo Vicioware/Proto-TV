@@ -5,144 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TNT Sports</title>
   <link rel="icon" href="../img/icon.png" type="image/png">
+  <!-- Para asegurar el correcto manejo de MSE/EME, sirve esta página desde HTTPS o HTTP-->  
   <style>
     @font-face {
       font-family: 'Azonix';
       src: url('../fonts/Azonix.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
     }
-
     @font-face {
       font-family: 'NorthSeanoDemo';
       src: url('../fonts/NorthSeanoDemoRegular.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
     }
-
     body {
-      font-family: 'NorthSeanoDemo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: 'NorthSeanoDemo', system-ui, sans-serif;
       background: linear-gradient(to bottom, #b6359c, #ef0a6a);
-      margin: 0;
-      padding: 20px;
-      padding-top: 100px;
-      line-height: 1.5;
-      min-height: 100vh;
-      position: relative;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin: 0; padding: 20px; padding-top: 80px;
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; box-sizing: border-box;
     }
-    .site-logo-link {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        z-index: 10;
-        display: block;
-    }
-    .site-logo-link img {
-        height: 60px;
-        width: auto;
-        display: block;
-    }
-    .back-button {
-        position: absolute;
-        top: 110px;
-        left: 30px;
-        z-index: 10;
-    }
-    .back-button img {
-        width: 30px;
-        height: auto;
-        display: block;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
-    }
-    .channel-title-img {
-        display: block;
-        max-width: 300px;
-        width: 70%;
-        height: auto;
-        margin: -40px auto 20px auto;
-        position: relative;
-        z-index: 1;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
-    }
-    .player-container {
-        max-width: 850px;
-        width: 100%;
-        margin: 0 auto;
-        position: relative;
-        padding-top: 56.25%; /* 16:9 */
-        height: 0;
-        overflow: hidden;
-        background-color: #000;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        z-index: 0;
-    }
-    .player-container video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-    @media (max-width: 900px) {
-        .player-container {
-            max-width: 95%;
-        }
-        .back-button {
-            top: 100px;
-            left: 25px;
-        }
-         .channel-title-img {
-            max-width: 250px;
-            margin: -30px auto 15px auto;
-        }
-    }
-
-    @media (max-width: 600px) {
-        body {
-            padding: 15px;
-            padding-top: 80px;
-        }
-        .site-logo-link {
-            top: 15px;
-            left: 15px;
-        }
-        .site-logo-link img {
-            height: 50px;
-        }
-        .back-button {
-            top: 85px;
-            left: 15px;
-        }
-        .back-button img {
-            width: 25px;
-        }
-        .channel-title-img {
-            max-width: 200px;
-            width: 60%;
-            margin: -20px auto 10px auto;
-        }
-        .player-container {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-    }
+    .site-logo-link, .back-button { position: absolute; z-index: 10; }
+    .site-logo-link { top: 20px; left: 20px; }
+    .back-button { top: 80px; left: 20px; }
+    .site-logo-link img { height: 50px; }
+    .back-button img { width: 25px; filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.1)); }
+    .channel-title-img { margin: -30px auto 20px; max-width: 250px; width: 70%; filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.1)); }
+    .player-container { position: relative; width: 100%; max-width: 850px; padding-top: 56.25%; background: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .player-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    @media (max-width:600px){ body{padding-top:60px;} .site-logo-link{top:15px;left:15px;} .back-button{top:65px;left:15px;} .channel-title-img{max-width:200px;margin:-20px auto 10px;} .player-container{border-radius:4px;} }
   </style>
 </head>
 <body>
-  <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png" alt="Logo Sitio">
-  </a>
-  <a href="../index.html" class="back-button">
-    <img src="../img/back.png" alt="Volver">
-  </a>
-
+  <a href="../index.html" class="site-logo-link"><img src="../img/logo.png" alt="Logo"></a>
+  <a href="../index.html" class="back-button"><img src="../img/back.png" alt="Volver"></a>
   <img src="../img/tntsports_title.png" class="channel-title-img" alt="TNT Sports">
-
   <div class="player-container">
     <video id="videoPlayer" controls></video>
   </div>
@@ -151,9 +45,20 @@
   <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const url = 'https://edge-mix01-mus.cvattv.com.ar/tok_eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxNzQ2NTY2MzQ1Iiwic2lwIjoiMzguNTIuMjE3LjIxNyIsInBhdGgiOiIvbGl2ZS9jNmVkcy9UTlRfU3BvcnRzX0hEL1NBX0xpdmVfZGFzaF9lbmMvIiwic2Vzc2lvbl9jZG5faWQiOiJjMTlhNWVlNWZhZDliYWJhIiwic2Vzc2lvbl9pZCI6IiIsImNsaWVudF9pZCI6IiIsImRldmljZV9pZCI6IiIsIm1heF9zZXNzaW9ucyI6MCwic2Vzc2lvbl9kdXJhdGlvbiI6MCwidXJsIjoiaHR0cHM6Ly8xODEuMTIuMzYuMTUwIiwiYXVkIjoiMTM2Iiwic291cmNlcyI6Wzc1LDg2XX0=.YfV4m4KZc4mEPn_yyUjTXWbfO8zGCtGzVWswinZJH_w7WGe_Vl-z6cJRJSkR25v6LI-iRyNq5nypYNsRSriuIQ==/live/c3eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
+      // URL del manifiesto DASH cifrado con ClearKey
+      const mpdUrl = 'https://edge-live02-mun.cvattv.com.ar/live/c7eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
+      // Claves ClearKey (extraídas de JW Player en tvlibreonline)
+      const keyId = 'bc80fa3da696e503f940fde5f681a1c5';
+      const key   = 'ea46e4e9f1132e8dd71fb77f7d55058a';
+
+      // Inicializar dash.js con protección ClearKey
       const player = dashjs.MediaPlayer().create();
-      player.initialize(document.querySelector('#videoPlayer'), url, true);
+      player.setProtectionData({
+        'org.w3.clearkey': {
+          clearkeys: { [keyId]: key }
+        }
+      });
+      player.initialize(document.getElementById('videoPlayer'), mpdUrl, true);
     });
   </script>
 </body>
