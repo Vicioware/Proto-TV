@@ -81,73 +81,80 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         z-index: 0;
     }
-    .player-container iframe {
+    .player-container video {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        border: none;
     }
     @media (max-width: 900px) {
         .player-container {
-            max-width: 95%; /* Usa porcentaje para adaptarse */
+            max-width: 95%;
         }
         .back-button {
             top: 100px;
             left: 25px;
         }
          .channel-title-img {
-            max-width: 250px; /* Título un poco más pequeño */
+            max-width: 250px;
             margin: -30px auto 15px auto;
         }
     }
 
-    /* Para móviles */
     @media (max-width: 600px) {
         body {
             padding: 15px;
-            padding-top: 80px; /* Menos padding superior */
+            padding-top: 80px;
         }
         .site-logo-link {
             top: 15px;
             left: 15px;
         }
         .site-logo-link img {
-            height: 50px; /* Logo más pequeño */
+            height: 50px;
         }
         .back-button {
-            top: 85px; /* Ajusta posición del botón atrás */
+            top: 85px;
             left: 15px;
         }
         .back-button img {
-            width: 25px; /* Botón atrás más pequeño */
+            width: 25px;
         }
         .channel-title-img {
-            max-width: 200px; /* Título más pequeño */
+            max-width: 200px;
             width: 60%;
-            margin: -20px auto 10px auto; /* Ajusta márgenes */
+            margin: -20px auto 10px auto;
         }
         .player-container {
-            max-width: 100%; /* Ocupa todo el ancho */
-            border-radius: 4px; /* Menos redondeo */
+            max-width: 100%;
+            border-radius: 4px;
         }
     }
   </style>
 </head>
 <body>
   <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png">
+    <img src="../img/logo.png" alt="Logo Sitio">
   </a>
   <a href="../index.html" class="back-button">
-    <img src="../img/back.png">
+    <img src="../img/back.png" alt="Volver">
   </a>
 
-  <img src="../img/tntsports_title.png" class="channel-title-img">
+  <img src="../img/tntsports_title.png" class="channel-title-img" alt="TNT Sports">
 
   <div class="player-container">
-    <iframe referrerpolicy="no-referrer" src="https://tvlibreonline.me/html/fl/?get=VE5UX1Nwb3J0c19IRA" index="0">0</mcreference>
+    <video id="videoPlayer" controls></video>
   </div>
 
+  <!-- dash.js -->
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const url = 'https://chromecast.cvattv.com.ar/live/c6eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
+      const player = dashjs.MediaPlayer().create();
+      player.initialize(document.querySelector('#videoPlayer'), url, true);
+    });
+  </script>
 </body>
 </html>
