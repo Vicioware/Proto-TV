@@ -107,7 +107,7 @@
 
         entries.forEach(li => {
           // Partido y horario
-          const mainA = li.querySelector('> a');
+          const mainA = li.querySelector('a:not([target])');
           if (!mainA) return;
 
           // Extraer horario
@@ -121,17 +121,17 @@
           if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
           text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
 
-          // Canales: extraer subitems
+          // Canales: extraer subitems en UL
           const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
           const channels = channelLinks.map(a => {
-            const span = a.querySelector('span');
-            if (span) span.remove();
+            const sp = a.querySelector('span');
+            if (sp) sp.remove();
             return a.textContent.trim();
           });
 
           // Construir fila
           const tr = document.createElement('tr');
-          [text, time, channels.join(', ')].forEach(val => {
+          [text, time, channels.length ? channels.join(', ') : '-'].forEach(val => {
             const td = document.createElement('td');
             td.textContent = val;
             tr.appendChild(td);
