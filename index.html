@@ -106,11 +106,8 @@
           const spanTime = mainA.querySelector('span.t');
           const tdTime = document.createElement('td');
           if (spanTime) {
-            // Crear un nuevo span con la misma clase y contenido
-            const newSpan = document.createElement('span');
-            newSpan.className = 't';
-            newSpan.textContent = spanTime.textContent;
-            tdTime.appendChild(newSpan);
+            // Simplemente usar el texto del span directamente sin crear un nuevo span con clase 't'
+            tdTime.textContent = spanTime.textContent;
           } else {
             tdTime.textContent = '';
           }
@@ -139,12 +136,6 @@
 
         table.appendChild(tbody);
         container.appendChild(table);
-
-        // Ejecutar script de conversión tras montar la tabla
-        if (window.guardaHorario && window.dT) {
-          guardaHorario();
-          dT();
-        }
 
       } catch (err) {
         document.getElementById('agenda-container').innerHTML = '<p>Error al cargar la agenda.</p>';
