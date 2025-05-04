@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proto TV</title>
   <link rel="icon" href="img/icon.png" type="image/png">
-  <!-- Importar script de conversión de horarios -->
-  <script src="smallscripts.js"></script>
   <style>
     @font-face { font-family: 'CalSans'; src: url('fonts/CalSans-Regular.ttf') format('opentype'); }
     @font-face { font-family: 'DMSans'; src: url('fonts/DMSans-Regular.ttf') format('truetype'); }
@@ -73,21 +71,24 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
 
+        // Título de la agenda
         const centerEl = doc.querySelector('center');
         const headerText = centerEl ? centerEl.textContent.trim() : 'Agenda deportiva';
 
+        // Todos los partidos
         const entries = Array.from(doc.querySelectorAll('li.AR'));
 
         const container = document.getElementById('agenda-container');
         container.innerHTML = '';
 
+        // Título
         const title = document.createElement('h2');
         title.textContent = headerText;
         container.appendChild(title);
 
+        // Crear tabla
         const table = document.createElement('table');
         table.id = 'agenda-table';
-
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         ['Partido', 'Horario', 'Canales'].forEach(txt => {
@@ -95,52 +96,40 @@
         });
         thead.appendChild(headRow);
         table.appendChild(thead);
-
         const tbody = document.createElement('tbody');
 
         entries.forEach(li => {
           const mainA = li.querySelector('a:not([target])');
           if (!mainA) return;
 
-          // Extraer span de tiempo y moverlo al TD sin alterar contenido para smallscripts
-          const spanTime = mainA.querySelector('span.t');
-          const tdTime = document.createElement('td');
-          if (spanTime) {
-            tdTime.appendChild(spanTime);
-          } else {
-            tdTime.textContent = '';
-          }
+          // Extraer y usar directamente el texto del <span class="t">
+          const span = mainA.querySelector('span.t');
+          const time = span ? span.textContent.trim() : '';
 
-          // Obtener texto del partido
+          // Texto del partido
           let text = mainA.textContent.trim();
           const parts = text.split(/\s+/);
           if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
           text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
-          const tdMatch = document.createElement('td');
-          tdMatch.textContent = text;
 
-          // Extraer canales
+          // Canales
           const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
           const channels = channelLinks.map(a => {
             const sp = a.querySelector('span'); if (sp) sp.remove();
             return a.textContent.trim();
           });
-          const tdChan = document.createElement('td');
-          tdChan.textContent = channels.length ? channels.join(', ') : '-';
 
+          // Fila
           const tr = document.createElement('tr');
+          const tdMatch = document.createElement('td'); tdMatch.textContent = text;
+          const tdTime = document.createElement('td'); tdTime.textContent = time;
+          const tdChan = document.createElement('td'); tdChan.textContent = channels.length ? channels.join(', ') : '-';
           tr.append(tdMatch, tdTime, tdChan);
           tbody.appendChild(tr);
         });
 
         table.appendChild(tbody);
         container.appendChild(table);
-
-        // Ejecutar script de conversión tras montar la tabla
-        if (window.guardaHorario && window.dT) {
-          guardaHorario();
-          dT();
-        }
 
       } catch (err) {
         document.getElementById('agenda-container').innerHTML = '<p>Error al cargar la agenda.</p>';
