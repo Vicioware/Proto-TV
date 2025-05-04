@@ -6,7 +6,6 @@
   <title>Proto TV</title>
   <link rel="icon" href="img/icon.png" type="image/png">
   <style>
-    /* Fuentes y estilos generales */
     @font-face { font-family: 'CalSans'; src: url('fonts/CalSans-Regular.ttf') format('opentype'); }
     @font-face { font-family: 'DMSans'; src: url('fonts/DMSans-Regular.ttf') format('truetype'); }
     body {
@@ -29,7 +28,8 @@
     #agenda-container { width: 100%; max-width: 900px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; }
     #agenda-container h2 { margin-top: 0; color: #ef0a6a; text-align: center; }
     #agenda-table { width: 100%; border-collapse: collapse; }
-    #agenda-table td { border: 1px solid #ddd; padding: 8px; }
+    #agenda-table th, #agenda-table td { border: 1px solid #ddd; padding: 8px; }
+    #agenda-table th { background: #f5f5f5; }
     /* Responsive */
     @media (max-width: 700px) {
       body { padding: 20px 15px; padding-top: 90px; }
@@ -66,10 +66,8 @@
   </section>
 
   <script>
-    // Función autoejecutable para cargar y procesar la agenda externa
     (async function() {
       try {
-        // Usamos AllOrigins para evitar problemas de CORS
         const proxy = 'https://api.allorigins.win/raw?url=';
         const targetUrl = encodeURIComponent('https://pelota-libre.org/agenda/');
         const resp = await fetch(proxy + targetUrl);
@@ -77,34 +75,57 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
 
-        // Extraemos el contenido de <center> (ej. fecha/título)
+        // Obtener título de la agenda
         const centerEl = doc.querySelector('center');
         const headerText = centerEl ? centerEl.textContent.trim() : 'Agenda deportiva';
 
-        // Extraemos los <li class="AR">
-        const items = Array.from(doc.querySelectorAll('li.AR'));
+        // Obtener solo los li.AR y su <a>, ignorando posibles <ul> anidados
+        const items = Array.from(doc.querySelectorAll('li.AR > a'));
 
-        // Referencia al contenedor local
         const container = document.getElementById('agenda-container');
-        container.innerHTML = ''; // Limpiamos mensaje de carga
+        container.innerHTML = '';
 
-        // Añadimos título
+        // Título
         const title = document.createElement('h2');
         title.textContent = headerText;
         container.appendChild(title);
 
-        // Construimos la tabla
+        // Tabla
         const table = document.createElement('table');
         table.id = 'agenda-table';
+
+        // Encabezados
+        const thead = document.createElement('thead');
+        const headRow = document.createElement('tr');
+        ['🏳️', 'Partido', 'Horario'].forEach(txt => {
+          const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+
         const tbody = document.createElement('tbody');
 
-        items.forEach(li => {
+        items.forEach(a => {
+          // Extraer horario
+          const span = a.querySelector('span');
+          const time = span ? span.textContent.trim() : '';
+          if (span) span.remove();
+
+          // Texto restante: icono + partido
+          const fullText = a.textContent.trim();
+          const parts = fullText.split(/\s+/);
+          const icon = parts.shift();
+          const match = parts.join(' ');
+
           const tr = document.createElement('tr');
-          const td = document.createElement('td');
-          td.textContent = li.textContent.trim();
-          tr.appendChild(td);
+          [icon, match, time].forEach(text => {
+            const td = document.createElement('td');
+            td.textContent = text;
+            tr.appendChild(td);
+          });
           tbody.appendChild(tr);
         });
+
         table.appendChild(tbody);
         container.appendChild(table);
 
