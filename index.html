@@ -106,7 +106,11 @@
           const spanTime = mainA.querySelector('span.t');
           const tdTime = document.createElement('td');
           if (spanTime) {
-            tdTime.appendChild(spanTime);
+            // Crear un nuevo span con la misma clase y contenido
+            const newSpan = document.createElement('span');
+            newSpan.className = 't';
+            newSpan.textContent = spanTime.textContent;
+            tdTime.appendChild(newSpan);
           } else {
             tdTime.textContent = '';
           }
