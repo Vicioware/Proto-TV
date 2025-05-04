@@ -94,10 +94,10 @@
         const table = document.createElement('table');
         table.id = 'agenda-table';
 
-        // Encabezados
+        // Encabezados sin columna de icono
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        ['🏳️', 'Partido', 'Horario'].forEach(txt => {
+        ['Partido', 'Horario'].forEach(txt => {
           const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
         });
         thead.appendChild(headRow);
@@ -111,14 +111,14 @@
           const time = span ? span.textContent.trim() : '';
           if (span) span.remove();
 
-          // Texto restante: icono + partido
+          // Remover icono y obtener partido
           const fullText = a.textContent.trim();
           const parts = fullText.split(/\s+/);
-          const icon = parts.shift();
+          parts.shift(); // Descartar icono
           const match = parts.join(' ');
 
           const tr = document.createElement('tr');
-          [icon, match, time].forEach(text => {
+          [match, time].forEach(text => {
             const td = document.createElement('td');
             td.textContent = text;
             tr.appendChild(td);
