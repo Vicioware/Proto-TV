@@ -106,19 +106,25 @@
         const tbody = document.createElement('tbody');
 
         items.forEach(a => {
-          // Extraer horario usando la clase correcta
+          // Extraer horario
           const span = a.querySelector('span.t');
           const time = span ? span.textContent.trim() : '';
           if (span) span.remove();
 
-          // Remover icono y obtener partido
-          const fullText = a.textContent.trim();
-          const parts = fullText.split(/\s+/);
-          parts.shift(); // Descartar icono
-          const match = parts.join(' ');
+          // Obtener texto completo y remover icono
+          let matchText = a.textContent.trim();
+          const parts = matchText.split(/\s+/);
+          parts.shift(); // quitar icono
+          matchText = parts.join(' ');
+
+          // Quitar prefijo "Superliga Argentina: " si existe
+          const prefix = 'Superliga Argentina: ';
+          if (matchText.startsWith(prefix)) {
+            matchText = matchText.substring(prefix.length);
+          }
 
           const tr = document.createElement('tr');
-          [match, time].forEach(text => {
+          [matchText, time].forEach(text => {
             const td = document.createElement('td');
             td.textContent = text;
             tr.appendChild(td);
