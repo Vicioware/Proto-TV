@@ -79,7 +79,7 @@
         const centerEl = doc.querySelector('center');
         const headerText = centerEl ? centerEl.textContent.trim() : 'Agenda deportiva';
 
-        // Obtener solo los li.AR y su <a>, ignorando posibles <ul> anidados
+        // Obtener solo los li.AR y su <a>
         const items = Array.from(doc.querySelectorAll('li.AR > a'));
 
         const container = document.getElementById('agenda-container');
@@ -94,7 +94,7 @@
         const table = document.createElement('table');
         table.id = 'agenda-table';
 
-        // Encabezados sin columna de icono
+        // Encabezados
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         ['Partido', 'Horario'].forEach(txt => {
@@ -111,17 +111,15 @@
           const time = span ? span.textContent.trim() : '';
           if (span) span.remove();
 
-          // Obtener texto completo y remover icono
+          // Obtener texto completo y quitar icono (si hay)
           let matchText = a.textContent.trim();
           const parts = matchText.split(/\s+/);
-          parts.shift(); // quitar icono
+          // Si el primer token no es letra, lo descartamos
+          if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
           matchText = parts.join(' ');
 
-          // Quitar prefijo "Superliga Argentina: " si existe
-          const prefix = 'Superliga Argentina: ';
-          if (matchText.startsWith(prefix)) {
-            matchText = matchText.substring(prefix.length);
-          }
+          // Quitar cualquier prefijo 'Superliga Argentina: '
+          matchText = matchText.replace(/^Superliga Argentina:\s*/, '');
 
           const tr = document.createElement('tr');
           [matchText, time].forEach(text => {
