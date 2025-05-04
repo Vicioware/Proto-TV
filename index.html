@@ -106,6 +106,7 @@
         const tbody = document.createElement('tbody');
 
         entries.forEach(li => {
+		  console.log('Procesando li.AR:', li.innerHTML);
           // Partido y horario
           const mainA = li.querySelector('a:not([target])');
           if (!mainA) return;
@@ -123,6 +124,7 @@
 
           // Canales: extraer subitems en UL
           const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
+		  console.log('Canales encontrados:', channelLinks.length);
           const channels = channelLinks.map(a => {
             const sp = a.querySelector('span');
             if (sp) sp.remove();
