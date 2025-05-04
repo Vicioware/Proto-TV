@@ -79,8 +79,8 @@
         const centerEl = doc.querySelector('center');
         const headerText = centerEl ? centerEl.textContent.trim() : 'Agenda deportiva';
 
-        // Obtener solo los li.AR y su <a>
-        const items = Array.from(doc.querySelectorAll('li.AR > a'));
+        // Obtener todos los li.AR
+        const entries = Array.from(doc.querySelectorAll('li.AR'));
 
         const container = document.getElementById('agenda-container');
         container.innerHTML = '';
@@ -94,10 +94,10 @@
         const table = document.createElement('table');
         table.id = 'agenda-table';
 
-        // Encabezados
+        // Encabezados incluyendo Canales
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        ['Partido', 'Horario'].forEach(txt => {
+        ['Partido', 'Horario', 'Canales'].forEach(txt => {
           const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
         });
         thead.appendChild(headRow);
@@ -105,26 +105,35 @@
 
         const tbody = document.createElement('tbody');
 
-        items.forEach(a => {
+        entries.forEach(li => {
+          // Partido y horario
+          const mainA = li.querySelector('> a');
+          if (!mainA) return;
+
           // Extraer horario
-          const span = a.querySelector('span.t');
-          const time = span ? span.textContent.trim() : '';
-          if (span) span.remove();
+          const spanTime = mainA.querySelector('span.t');
+          const time = spanTime ? spanTime.textContent.trim() : '';
+          if (spanTime) spanTime.remove();
 
-          // Obtener texto completo y quitar icono (si hay)
-          let matchText = a.textContent.trim();
-          const parts = matchText.split(/\s+/);
-          // Si el primer token no es letra, lo descartamos
+          // Texto del partido
+          let text = mainA.textContent.trim();
+          const parts = text.split(/\s+/);
           if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
-          matchText = parts.join(' ');
+          text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
 
-          // Quitar cualquier prefijo 'Superliga Argentina: '
-          matchText = matchText.replace(/^Superliga Argentina:\s*/, '');
+          // Canales: extraer subitems
+          const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
+          const channels = channelLinks.map(a => {
+            const span = a.querySelector('span');
+            if (span) span.remove();
+            return a.textContent.trim();
+          });
 
+          // Construir fila
           const tr = document.createElement('tr');
-          [matchText, time].forEach(text => {
+          [text, time, channels.join(', ')].forEach(val => {
             const td = document.createElement('td');
-            td.textContent = text;
+            td.textContent = val;
             tr.appendChild(td);
           });
           tbody.appendChild(tr);
