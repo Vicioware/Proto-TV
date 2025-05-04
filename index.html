@@ -19,18 +19,15 @@
     .site-logo-link { position: absolute; top: 20px; left: 20px; z-index: 10; }
     .site-logo-link img { height: 60px; width: auto; display: block; }
     h1 { font-family: 'CalSans', sans-serif; text-align: center; color: #fff; margin: 0 0 40px; }
-    /* Contenedor de canales */
     #channel-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 900px; width: 100%; margin-bottom: 40px; }
     .channel-item { text-decoration: none; color: inherit; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; }
     .channel-item:hover { transform: translateY(-5px); }
     .channel-item img { width: 180px; height: 180px; object-fit: cover; border-radius: 12px; }
-    /* Agenda propia */
     #agenda-container { width: 100%; max-width: 900px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; }
     #agenda-container h2 { margin-top: 0; color: #ef0a6a; text-align: center; }
     #agenda-table { width: 100%; border-collapse: collapse; }
     #agenda-table th, #agenda-table td { border: 1px solid #ddd; padding: 8px; }
     #agenda-table th { background: #f5f5f5; }
-    /* Responsive */
     @media (max-width: 700px) {
       body { padding: 20px 15px; padding-top: 90px; }
       .site-logo-link { top: 15px; left: 15px; }
@@ -60,7 +57,6 @@
     </a>
   </div>
 
-  <!-- Contenedor donde se mostrará la agenda extraída -->
   <section id="agenda-container">
     <h2>Cargando agenda...</h2>
   </section>
@@ -75,26 +71,21 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
 
-        // Obtener título de la agenda
         const centerEl = doc.querySelector('center');
         const headerText = centerEl ? centerEl.textContent.trim() : 'Agenda deportiva';
 
-        // Obtener todos los li.AR
         const entries = Array.from(doc.querySelectorAll('li.AR'));
 
         const container = document.getElementById('agenda-container');
         container.innerHTML = '';
 
-        // Título
         const title = document.createElement('h2');
         title.textContent = headerText;
         container.appendChild(title);
 
-        // Tabla
         const table = document.createElement('table');
         table.id = 'agenda-table';
 
-        // Encabezados incluyendo Canales
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
         ['Partido', 'Horario', 'Canales'].forEach(txt => {
@@ -106,32 +97,25 @@
         const tbody = document.createElement('tbody');
 
         entries.forEach(li => {
-		  console.log('Procesando li.AR:', li.innerHTML);
-          // Partido y horario
           const mainA = li.querySelector('a:not([target])');
           if (!mainA) return;
 
-          // Extraer horario
           const spanTime = mainA.querySelector('span.t');
           const time = spanTime ? spanTime.textContent.trim() : '';
           if (spanTime) spanTime.remove();
 
-          // Texto del partido
           let text = mainA.textContent.trim();
           const parts = text.split(/\s+/);
           if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
           text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
 
-          // Canales: extraer subitems en UL
           const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
-		  console.log('Canales encontrados:', channelLinks.length);
           const channels = channelLinks.map(a => {
             const sp = a.querySelector('span');
             if (sp) sp.remove();
             return a.textContent.trim();
           });
 
-          // Construir fila
           const tr = document.createElement('tr');
           [text, time, channels.length ? channels.join(', ') : '-'].forEach(val => {
             const td = document.createElement('td');
@@ -146,7 +130,7 @@
 
       } catch (err) {
         document.getElementById('agenda-container').innerHTML = '<p>Error al cargar la agenda.</p>';
-        console.error(err);
+        console.error(err); // Mantenemos el console.error para errores
       }
     })();
   </script>
