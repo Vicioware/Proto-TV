@@ -7,14 +7,8 @@
   <link rel="icon" href="../img/icon.png" type="image/png">
   <!-- Para asegurar el correcto manejo de MSE/EME, sirve esta página desde HTTPS o HTTP-->  
   <style>
-    @font-face {
-      font-family: 'Azonix';
-      src: url('../fonts/Azonix.otf') format('opentype');
-    }
-    @font-face {
-      font-family: 'NorthSeanoDemo';
-      src: url('../fonts/NorthSeanoDemoRegular.ttf') format('truetype');
-    }
+    @font-face { font-family: 'Azonix'; src: url('../fonts/Azonix.otf') format('opentype'); }
+    @font-face { font-family: 'NorthSeanoDemo'; src: url('../fonts/NorthSeanoDemoRegular.ttf') format('truetype'); }
     body {
       font-family: 'NorthSeanoDemo', system-ui, sans-serif;
       background: linear-gradient(to bottom, #b6359c, #ef0a6a);
@@ -45,18 +39,21 @@
   <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // URL del manifiesto DASH cifrado con ClearKey
-      const mpdUrl = 'https://edge-live02-mun.cvattv.com.ar/live/c7eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
+      // Endpoint de la función Netlify que hace de proxy
+      const proxyEndpoint = 'https://nimble-melomakarona-f8780c.netlify.app/.netlify/functions/proxy';
+      // URL original del manifiesto DASH cifrado con ClearKey
+      const originalMpd = 'https://edge-live02-mun.cvattv.com.ar/live/c7eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
+      // Concatena proxy y manifiesto (cifrado ClearKey)
+      const mpdUrl = `${proxyEndpoint}?url=${encodeURIComponent(originalMpd)}`;
+
       // Claves ClearKey (extraídas de JW Player en tvlibreonline)
       const keyId = 'bc80fa3da696e503f940fde5f681a1c5';
       const key   = 'ea46e4e9f1132e8dd71fb77f7d55058a';
 
-      // Inicializar dash.js con protección ClearKey
+      // Inicializar dash.js con protección ClearKey usando el proxy
       const player = dashjs.MediaPlayer().create();
       player.setProtectionData({
-        'org.w3.clearkey': {
-          clearkeys: { [keyId]: key }
-        }
+        'org.w3.clearkey': { clearkeys: { [keyId]: key } }
       });
       player.initialize(document.getElementById('videoPlayer'), mpdUrl, true);
     });
