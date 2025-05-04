@@ -90,7 +90,7 @@
 
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        ['Partido', 'Horario (GMT-3)', 'Canales'].forEach(txt => {
+        ['Partido', 'Horario', 'Canales'].forEach(txt => {
           const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
         });
         thead.appendChild(headRow);
@@ -102,26 +102,33 @@
           const mainA = li.querySelector('a:not([target])');
           if (!mainA) return;
 
+          // Extraer span de tiempo y moverlo al TD sin alterar contenido para smallscripts
           const spanTime = mainA.querySelector('span.t');
-          const rawTime = spanTime ? spanTime.textContent.trim() : '';
-          if (spanTime) spanTime.remove();
+          const tdTime = document.createElement('td');
+          if (spanTime) {
+            tdTime.appendChild(spanTime);
+          } else {
+            tdTime.textContent = '';
+          }
 
+          // Obtener texto del partido
           let text = mainA.textContent.trim();
           const parts = text.split(/\s+/);
           if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
           text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
+          const tdMatch = document.createElement('td');
+          tdMatch.textContent = text;
 
+          // Extraer canales
           const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
           const channels = channelLinks.map(a => {
             const sp = a.querySelector('span'); if (sp) sp.remove();
             return a.textContent.trim();
           });
+          const tdChan = document.createElement('td');
+          tdChan.textContent = channels.length ? channels.join(', ') : '-';
 
-          // Crear elementos sin formatear
           const tr = document.createElement('tr');
-          const tdMatch = document.createElement('td'); tdMatch.textContent = text;
-          const tdTime = document.createElement('td'); tdTime.textContent = rawTime; tdTime.classList.add('t');
-          const tdChan = document.createElement('td'); tdChan.textContent = channels.length ? channels.join(', ') : '-';
           tr.append(tdMatch, tdTime, tdChan);
           tbody.appendChild(tr);
         });
@@ -129,7 +136,7 @@
         table.appendChild(tbody);
         container.appendChild(table);
 
-        // Aplicar conversión de horarios al DOM actual
+        // Ejecutar script de conversión tras montar la tabla
         if (window.guardaHorario && window.dT) {
           guardaHorario();
           dT();
