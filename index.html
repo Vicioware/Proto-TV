@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proto TV</title>
   <link rel="icon" href="img/icon.png" type="image/png">
+  <!-- Importar script de conversión de horarios -->
+  <script src="smallscripts.js"></script>
   <style>
     @font-face { font-family: 'CalSans'; src: url('fonts/CalSans-Regular.ttf') format('opentype'); }
     @font-face { font-family: 'DMSans'; src: url('fonts/DMSans-Regular.ttf') format('truetype'); }
@@ -88,7 +90,6 @@
 
         const thead = document.createElement('thead');
         const headRow = document.createElement('tr');
-        // Encabezado modificado para indicar la zona horaria
         ['Partido', 'Horario (GMT-3)', 'Canales'].forEach(txt => {
           const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
         });
@@ -102,7 +103,7 @@
           if (!mainA) return;
 
           const spanTime = mainA.querySelector('span.t');
-          const time = spanTime ? spanTime.textContent.trim() : '';
+          const rawTime = spanTime ? spanTime.textContent.trim() : '';
           if (spanTime) spanTime.remove();
 
           let text = mainA.textContent.trim();
@@ -112,22 +113,27 @@
 
           const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
           const channels = channelLinks.map(a => {
-            const sp = a.querySelector('span');
-            if (sp) sp.remove();
+            const sp = a.querySelector('span'); if (sp) sp.remove();
             return a.textContent.trim();
           });
 
+          // Crear elementos sin formatear
           const tr = document.createElement('tr');
-          [text, time, channels.length ? channels.join(', ') : '-'].forEach(val => {
-            const td = document.createElement('td');
-            td.textContent = val;
-            tr.appendChild(td);
-          });
+          const tdMatch = document.createElement('td'); tdMatch.textContent = text;
+          const tdTime = document.createElement('td'); tdTime.textContent = rawTime; tdTime.classList.add('t');
+          const tdChan = document.createElement('td'); tdChan.textContent = channels.length ? channels.join(', ') : '-';
+          tr.append(tdMatch, tdTime, tdChan);
           tbody.appendChild(tr);
         });
 
         table.appendChild(tbody);
         container.appendChild(table);
+
+        // Aplicar conversión de horarios al DOM actual
+        if (window.guardaHorario && window.dT) {
+          guardaHorario();
+          dT();
+        }
 
       } catch (err) {
         document.getElementById('agenda-container').innerHTML = '<p>Error al cargar la agenda.</p>';
