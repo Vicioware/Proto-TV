@@ -12,7 +12,7 @@
     @font-face { font-family: 'DMSans'; src: url('fonts/DMSans-Regular.ttf') format('truetype'); }
     body {
       font-family: 'DMSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
-      background: linear-gradient(to bottom, #b6359c, #ef0a6a);
+      background-color: #001029; /* Reemplazado el degradado por color sólido */
       margin: 0; padding: 40px 20px; padding-top: 100px;
       display: flex; flex-direction: column; align-items: center;
       min-height: 100vh; position: relative;
@@ -174,7 +174,7 @@
     updateAgenda();
 
     // Establece un intervalo para llamar a updateAgenda cada 5 minutos (300000 ms)
-    setInterval(updateAgenda, 300000);
+    setInterval(updateAgenda, 60000);
   </script>
 </body>
 </html>
