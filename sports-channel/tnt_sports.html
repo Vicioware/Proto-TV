@@ -42,7 +42,7 @@
       // Endpoint de la función Netlify que hace de proxy
       const proxyEndpoint = 'https://nimble-melomakarona-f8780c.netlify.app/.netlify/functions/proxy';
       // URL original del manifiesto DASH cifrado con ClearKey
-      const originalMpd = 'https://edge-live02-mun.cvattv.com.ar/live/c7eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
+      const originalMpd = 'https://edge-mix01-mus.cvattv.com.ar/tok_eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxNzQ2NTc1NjcyIiwic2lwIjoiMzguNTIuMjE3LjIxNyIsInBhdGgiOiIvbGl2ZS9jNmVkcy9UTlRfU3BvcnRzX0hEL1NBX0xpdmVfZGFzaF9lbmMvIiwic2Vzc2lvbl9jZG5faWQiOiJkYjc3MTIzYzg0NjhiOGE1Iiwic2Vzc2lvbl9pZCI6IiIsImNsaWVudF9pZCI6IiIsImRldmljZV9pZCI6IiIsIm1heF9zZXNzaW9ucyI6MCwic2Vzc2lvbl9kdXJhdGlvbiI6MCwidXJsIjoiaHR0cHM6Ly8yMDEuMjM1LjY2LjExNCIsImF1ZCI6IjEzNiIsInNvdXJjZXMiOls3NSw4NSwxNDQsODYsODhdfQ==.aqPMRp3D7nFWVxCcHQr5BylTmOeKOE3o1LJ6sdPnfjfPJ3H9j-CVu3T5c0JAnjdoE_bea46zoWipuCtWtHv4rw==/live/c3eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd';
       // Concatena proxy y manifiesto (cifrado ClearKey)
       const mpdUrl = `${proxyEndpoint}?url=${encodeURIComponent(originalMpd)}`;
 
