@@ -106,65 +106,78 @@
         const entries = Array.from(doc.querySelectorAll('li.AR'));
 
         const container = document.getElementById('agenda-container');
-        container.innerHTML = '';
+        container.innerHTML = ''; // Limpiar contenido anterior
 
         const title = document.createElement('h2');
         title.textContent = headerText;
         container.appendChild(title);
 
-        const table = document.createElement('table');
-        table.id = 'agenda-table';
+        // Comprobar si hay entradas
+        if (entries.length === 0) {
+          // Si no hay entradas, mostrar mensaje
+          const noDataDiv = document.createElement('p');
+          noDataDiv.textContent = 'No hay partidos para hoy';
+          noDataDiv.style.textAlign = 'center'; // Centrar el texto
+          noDataDiv.style.padding = '20px 0'; // Añadir algo de espacio
+          container.appendChild(noDataDiv);
+        } else {
+          // Si hay entradas, crear y llenar la tabla
+          const table = document.createElement('table');
+          table.id = 'agenda-table';
 
-        const thead = document.createElement('thead');
-        const headRow = document.createElement('tr');
-        ['Partido', 'Horario', 'Canales'].forEach(txt => {
-          const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
-        });
-        thead.appendChild(headRow);
-        table.appendChild(thead);
-
-        const tbody = document.createElement('tbody');
-
-        entries.forEach(li => {
-          const mainA = li.querySelector('a:not([target])');
-          if (!mainA) return;
-
-          // Extraer span de tiempo y moverlo al TD sin alterar contenido para smallscripts
-          const spanTime = mainA.querySelector('span.t');
-          const tdTime = document.createElement('td');
-          if (spanTime) {
-            // Simplemente usar el texto del span directamente sin crear un nuevo span con clase 't'
-            tdTime.textContent = spanTime.textContent;
-          } else {
-            tdTime.textContent = '';
-          }
-
-          // Obtener texto del partido
-          let text = mainA.textContent.trim();
-          const parts = text.split(/\s+/);
-          if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
-          text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
-          const tdMatch = document.createElement('td');
-          tdMatch.textContent = text;
-
-          // Extraer canales
-          const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
-          const channels = channelLinks.map(a => {
-            const sp = a.querySelector('span'); if (sp) sp.remove();
-            return a.textContent.trim();
+          const thead = document.createElement('thead');
+          const headRow = document.createElement('tr');
+          ['Partido', 'Horario', 'Canales'].forEach(txt => {
+            const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
           });
-          const tdChan = document.createElement('td');
-          tdChan.textContent = channels.length ? channels.join(', ') : '-';
+          thead.appendChild(headRow);
+          table.appendChild(thead);
 
-          const tr = document.createElement('tr');
-          tr.append(tdMatch, tdTime, tdChan);
-          tbody.appendChild(tr);
-        });
+          const tbody = document.createElement('tbody');
 
-        table.appendChild(tbody);
-        container.appendChild(table);
-        if (typeof convertTimes === 'function') {
-          convertTimes(); 
+          entries.forEach(li => {
+            const mainA = li.querySelector('a:not([target])');
+            if (!mainA) return;
+
+            // Extraer span de tiempo y moverlo al TD sin alterar contenido para smallscripts
+            const spanTime = mainA.querySelector('span.t');
+            const tdTime = document.createElement('td');
+            if (spanTime) {
+              // Simplemente usar el texto del span directamente sin crear un nuevo span con clase 't'
+              tdTime.textContent = spanTime.textContent;
+            } else {
+              tdTime.textContent = '';
+            }
+
+            // Obtener texto del partido
+            let text = mainA.textContent.trim();
+            const parts = text.split(/\s+/);
+            if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
+            text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
+            const tdMatch = document.createElement('td');
+            tdMatch.textContent = text;
+
+            // Extraer canales
+            const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
+            const channels = channelLinks.map(a => {
+              const sp = a.querySelector('span'); if (sp) sp.remove();
+              return a.textContent.trim();
+            });
+            const tdChan = document.createElement('td');
+            tdChan.textContent = channels.length ? channels.join(', ') : '-';
+
+            const tr = document.createElement('tr');
+            tr.append(tdMatch, tdTime, tdChan);
+            tbody.appendChild(tr);
+          });
+
+          table.appendChild(tbody);
+          container.appendChild(table); // Añadir la tabla completa al contenedor
+
+          // Llama a la función para convertir horarios solo si hay tabla
+          if (typeof convertTimes === 'function') {
+            convertTimes(); 
+          }
         }
 
       } catch (err) {
