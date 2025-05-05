@@ -196,27 +196,58 @@
 
           uniqueEntries.forEach(li => { // Iterar sobre las entradas únicas
             const mainA = li.querySelector('a:not([target])');
-            // Ya validamos mainA al crear uniqueEntries, pero una doble verificación no hace daño
             if (!mainA) return; 
 
             // Extraer span de tiempo
             const spanTime = mainA.querySelector('span.t');
             const tdTime = document.createElement('td');
             if (spanTime) {
-              tdTime.textContent = spanTime.textContent; // Mostrar hora tal cual
+              // --- Inicio: Ajuste de Hora ---
+              const originalTime = spanTime.textContent.trim(); // Ej: "01:10"
+              const timeParts = originalTime.split(':');
+              if (timeParts.length === 2) {
+                let hour = parseInt(timeParts[0], 10);
+                const minute = parseInt(timeParts[1], 10);
+
+                if (!isNaN(hour) && !isNaN(minute)) {
+                  // Restar 4 horas y manejar el cruce de medianoche
+                  hour = (hour - 4 + 24) % 24; 
+
+                  // Formatear a HH:MM con ceros iniciales si es necesario
+                  const adjustedHourStr = hour.toString().padStart(2, '0');
+                  const minuteStr = minute.toString().padStart(2, '0');
+                  tdTime.textContent = `${adjustedHourStr}:${minuteStr}`;
+                } else {
+                  tdTime.textContent = originalTime; // Mostrar original si el parseo falla
+                }
+              } else {
+                tdTime.textContent = originalTime; // Mostrar original si el formato no es HH:MM
+              }
+              // --- Fin: Ajuste de Hora ---
             } else {
               tdTime.textContent = '';
             }
 
-            // Obtener texto del partido (reutilizar lógica de desduplicación)
-            let text = mainA.textContent.trim();
+            // --- Inicio: Corrección Texto del Partido ---
+            // Clonar el nodo 'a' para manipularlo sin afectar el original para la hora
+            const linkClone = mainA.cloneNode(true);
+            const timeSpanInClone = linkClone.querySelector('span.t');
+            if (timeSpanInClone) {
+              timeSpanInClone.remove(); // Eliminar el span de tiempo del clon
+            }
+            let text = linkClone.textContent.trim(); // Obtener texto sin el horario
+            // --- Fin: Corrección Texto del Partido ---
+
             const parts = text.split(/\s+/);
-            if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
-            text = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
+            // Eliminar prefijos numéricos o de tiempo residuales si los hubiera
+            while (parts.length > 0 && !/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) {
+                 parts.shift();
+            }
+            text = parts.join(' ').replace(/^Superliga Argentina:\s*/, ''); // Limpiar nombre de liga
             const tdMatch = document.createElement('td');
             tdMatch.textContent = text;
 
-            // Extraer canales
+            // Extraer canales (sin cambios)
             const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
             const channels = channelLinks.map(a => {
               const sp = a.querySelector('span'); if (sp) sp.remove();
