@@ -1,47 +1,54 @@
 // netlify/functions/proxy.js
 
-// Si necesitas compatibilidad con fetch en Node <18, descomenta la siguiente línea:
-// import fetch from 'node-fetch';
-
 export async function handler(event, context) {
-  const { url } = event.queryStringParameters || {}
++  // 1. Atender preflight CORS
++  if (event.httpMethod === 'OPTIONS') {
++    return {
++      statusCode: 204,
++      headers: {
++        'Access-Control-Allow-Origin': '*',
++        'Access-Control-Allow-Methods': 'GET,HEAD,OPTIONS',
++        'Access-Control-Allow-Headers': '*',
++      }
++    };
++  }
 
+  const { url } = event.queryStringParameters || {};
   if (!url) {
-    return {
-      statusCode: 400,
-      body: 'Missing "url" query parameter'
-    }
+    return { statusCode: 400, body: 'Missing "url" parameter' };
   }
 
   try {
-    // Reenvía la petición al origen
     const resp = await fetch(url, {
-      // opcional: propaga cabeceras de usuario
       headers: { 'User-Agent': event.headers['user-agent'] }
-    })
+    });
 
-    // Clona cabeceras y añade CORS
-    const headers = {}
+    // 2. Reconstruir headers excluyendo content‑length
+-    const headers = {};
++    const headersOut = {};
     resp.headers.forEach((value, key) => {
-      headers[key] = value
-    })
-    headers['Access-Control-Allow-Origin'] = '*'
-    headers['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS'
-    headers['Access-Control-Allow-Headers'] = '*'
+-      headers[key] = value
++      if (key.toLowerCase() !== 'content-length') {
++        headersOut[key] = value;
++      }
+    });
 
-    // Devolver el cuerpo tal cual llega (arrayBuffer para binarios)
-    const body = await resp.arrayBuffer()
++    // 3. Forzar CORS
++    headersOut['Access-Control-Allow-Origin']  = '*';
++    headersOut['Access-Control-Allow-Methods'] = 'GET,HEAD,OPTIONS';
++    headersOut['Access-Control-Allow-Headers'] = '*';
+
+    // 4. Leer body como arrayBuffer y enviar en base64
+    const buf = await resp.arrayBuffer();
     return {
       statusCode: resp.status,
-      headers,
-      body: Buffer.from(body).toString('base64'),
+-      headers,
+-      body: Buffer.from(body).toString('base64'),
++      headers: headersOut,
++      body:   Buffer.from(buf).toString('base64'),
       isBase64Encoded: true
-    }
-
+    };
   } catch (err) {
-    return {
-      statusCode: 502,
-      body: 'Error proxying request: ' + err.message
-    }
+    return { statusCode: 502, body: 'Proxy error: ' + err.message };
   }
 }
