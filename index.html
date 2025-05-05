@@ -19,8 +19,15 @@
       color: #333;
     }
     .site-logo-link { position: absolute; top: 20px; left: 20px; z-index: 10; }
-    .site-logo-link img { height: 60px; width: auto; display: block; }
-    h1 { font-family: 'CalSans', sans-serif; text-align: center; color: #fff; margin: 0 0 40px; }
+    .site-logo-link img { height: 42px; width: auto; display: block; } /* Altura reducida */
+    h1 { 
+      font-family: 'CalSans', sans-serif; 
+      text-align: center; 
+      color: #fff; 
+      margin: 0 0 40px; 
+      font-size: 37px; /* Tamaño aumentado (aplicado a todos los tamaños) */
+      letter-spacing: 2px; /* Interletrado añadido (aplicado a todos los tamaños) */
+    }
     #channel-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 900px; width: 100%; margin-bottom: 40px; }
     .channel-item { text-decoration: none; color: inherit; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; }
     .channel-item:hover { transform: translateY(-5px); }
@@ -32,16 +39,13 @@
     #agenda-table th { background: #f5f5f5; }
     @media (max-width: 700px) {
       body { padding: 20px 15px; padding-top: 90px; }
-      .site-logo-link { position: absolute; top: 20px; left: 20px; z-index: 10; }
-      .site-logo-link img { height: 42px; width: auto; display: block; } /* Altura reducida */
+      .site-logo-link { position: absolute; top: 15px; left: 15px; } /* Ajustado para móvil */
+      .site-logo-link img { height: 50px; } /* Tamaño de logo para móvil */
       h1 { 
-      font-family: 'CalSans', sans-serif; 
-      text-align: center; 
-      color: #fff; 
-      margin: 0 0 40px; 
-      font-size: 37px; /* Tamaño aumentado */
-      letter-spacing: 2px; /* Interletrado añadido */
-    }
+        font-size: 1.8em; /* Tamaño específico para móvil */ 
+        margin-bottom: 30px; 
+        /* Ya no se necesita font-family, text-align, color, letter-spacing aquí si son iguales al general */
+      }
       #channel-grid { gap: 15px; justify-content: space-around; }
       .channel-item img { width: 120px; height: 120px; }
       #agenda-container { padding: 15px; }
