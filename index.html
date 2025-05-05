@@ -12,11 +12,26 @@
     @font-face { font-family: 'DMSans'; src: url('fonts/DMSans-Regular.ttf') format('truetype'); }
     body {
       font-family: 'DMSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
-      background-color: #001029; /* Reemplazado el degradado por color sólido */
+      /* background-color: #001029; */ /* Eliminamos el color sólido */
+      background-color: transparent; /* Hacemos el fondo del body transparente */
       margin: 0; padding: 40px 20px; padding-top: 100px;
       display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; position: relative;
+      min-height: 100vh; position: relative; /* Mantenemos position: relative */
       color: #333;
+      z-index: 1; /* Asegura que el contenido esté sobre el fondo desenfocado */
+    }
+    body::before {
+      content: ''; /* Requerido para pseudo-elementos */
+      position: fixed; /* Fija el fondo a la ventana */
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      background-image: url('img/background.webp'); /* Establece la imagen de fondo */
+      background-size: cover; /* Cubre todo el área */
+      background-position: center; /* Centra la imagen */
+      filter: blur(10px); /* Aplica el desenfoque (ajusta '10px' si necesitas más o menos blur) */
+      z-index: -1; /* Coloca el pseudo-elemento detrás del contenido del body */
     }
     .site-logo-link { position: absolute; top: 20px; left: 20px; z-index: 10; }
     .site-logo-link img { height: 42px; width: auto; display: block; } /* Altura reducida */
