@@ -47,7 +47,12 @@
     #channel-grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; max-width: 900px; width: 100%; margin-bottom: 40px; }
     .channel-item { text-decoration: none; color: inherit; text-align: center; transition: transform 0.2s; display: flex; flex-direction: column; }
     .channel-item:hover { transform: translateY(-5px); }
-    .channel-item img { width: 180px; height: 180px; object-fit: cover; border-radius: 12px; }
+    .channel-item img { 
+      width: 180px; /* Mantenemos el ancho deseado */
+      height: auto; /* Ajustamos la altura automáticamente */
+      object-fit: cover; /* Mantenemos cover por si acaso, pero con height:auto no debería ser necesario */
+      border-radius: 12px; 
+    }
     #agenda-container { width: 100%; max-width: 900px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; }
     #agenda-container h2 { margin-top: 0; color: #ef0a6a; text-align: center; }
     #agenda-table { width: 100%; border-collapse: collapse; }
@@ -63,26 +68,32 @@
         /* Ya no se necesita font-family, text-align, color, letter-spacing aquí si son iguales al general */
       }
       #channel-grid { gap: 15px; justify-content: space-around; }
-      .channel-item img { width: 120px; height: 120px; }
+      .channel-item img { 
+        width: 120px; /* Ancho para móvil */
+        height: auto; /* Altura automática también para móvil */
+      }
       #agenda-container { padding: 15px; }
     }
   </style>
 </head>
 <body>
   <a href="index.html" class="site-logo-link">
-    <img src="img/logo.png" alt="ONLiVE_logo">
+    <img src="img/logo.png">
   </a>
   <h1>DEPORTES</h1>
 
   <div id="channel-grid">
     <a href="sports-channel/directv_sports.html" class="channel-item">
-      <img src="img/directv_sports.png" alt="DirecTV Sports">
+      <img src="img/directv_sports.png">
     </a>
     <a href="sports-channel/tnt_sports.html" class="channel-item">
-      <img src="img/tnt_sports.png" alt="TNT Sports">
+      <img src="img/tnt_sports.png">
     </a>
     <a href="sports-channel/espn.html" class="channel-item">
-      <img src="img/espn.png" alt="ESPN">
+      <img src="img/espn.png">
+    </a>
+    <a href="sports-channel/tyc_sports.html" class="channel-item"> {/* Nuevo canal añadido */}
+      <img src="img/tyc_sports.png">
     </a>
   </div>
 
