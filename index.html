@@ -103,33 +103,81 @@
 
   <script>
     async function updateAgenda() {
+      const container = document.getElementById('agenda-container');
+      // Mostrar mensaje de carga inicial o al actualizar
+      container.innerHTML = '<h2>Cargando agenda...</h2>'; 
+
       try {
         const proxy = 'https://api.allorigins.win/raw?url=';
-        const targetUrl = encodeURIComponent('https://pelota-libre.org/agenda/');
-        const resp = await fetch(proxy + targetUrl);
-        const htmlText = await resp.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, 'text/html');
+        const targetUrls = [
+          'https://pelota-libre.org/agenda/',
+          'https://tvlibreonline.me/agenda/' 
+        ];
 
-        const centerEl = doc.querySelector('center');
-        const headerText = centerEl ? centerEl.textContent.trim() : 'Agenda deportiva';
+        // Fetch data from all sources concurrently
+        const responses = await Promise.all(
+          targetUrls.map(url => fetch(proxy + encodeURIComponent(url)))
+        );
 
-        const entries = Array.from(doc.querySelectorAll('li.AR'));
+        // Process all responses
+        let allEntries = [];
+        let headerText = 'Agenda deportiva'; // Default header
 
-        const container = document.getElementById('agenda-container');
-        container.innerHTML = ''; // Limpiar contenido anterior
+        for (const resp of responses) {
+          if (!resp.ok) {
+            console.warn(`Fallo al cargar desde: ${resp.url}`);
+            continue; // Saltar a la siguiente URL si una falla
+          }
+          const htmlText = await resp.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, 'text/html');
+
+          // Intentar obtener el encabezado (usar el primero que se encuentre)
+          const centerEl = doc.querySelector('center');
+          if (centerEl && headerText === 'Agenda deportiva') { // Tomar el primer encabezado válido
+             headerText = centerEl.textContent.trim();
+          }
+
+          // Extraer entradas de esta fuente
+          const entries = Array.from(doc.querySelectorAll('li.AR'));
+          allEntries = allEntries.concat(entries); // Añadir entradas a la lista combinada
+        }
+        
+        // Limpiar contenedor antes de añadir contenido nuevo (excepto si hubo error total)
+        container.innerHTML = ''; 
 
         const title = document.createElement('h2');
         title.textContent = headerText;
         container.appendChild(title);
 
-        // Comprobar si hay entradas
-        if (entries.length === 0) {
+        // Eliminar duplicados basados en el texto del partido y hora (opcional pero recomendado)
+        const uniqueEntriesData = {};
+        const uniqueEntries = [];
+        allEntries.forEach(li => {
+            const mainA = li.querySelector('a:not([target])');
+            if (!mainA) return;
+            const spanTime = mainA.querySelector('span.t');
+            const timeText = spanTime ? spanTime.textContent.trim() : '';
+            let matchText = mainA.textContent.trim();
+            const parts = matchText.split(/\s+/);
+            if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
+            matchText = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
+            
+            const key = `${matchText}|${timeText}`; // Clave única por partido y hora
+            if (!uniqueEntriesData[key]) {
+                uniqueEntriesData[key] = true;
+                uniqueEntries.push(li); // Añadir solo si no existe la clave
+            }
+        });
+
+
+        // Comprobar si hay entradas únicas
+        if (uniqueEntries.length === 0) {
           // Si no hay entradas, mostrar mensaje
           const noDataDiv = document.createElement('p');
           noDataDiv.textContent = 'No hay partidos para hoy';
-          noDataDiv.style.textAlign = 'center'; // Centrar el texto
-          noDataDiv.style.padding = '20px 0'; // Añadir algo de espacio
+          noDataDiv.style.textAlign = 'center';
+          noDataDiv.style.padding = '20px 0';
           container.appendChild(noDataDiv);
         } else {
           // Si hay entradas, crear y llenar la tabla
@@ -146,21 +194,21 @@
 
           const tbody = document.createElement('tbody');
 
-          entries.forEach(li => {
+          uniqueEntries.forEach(li => { // Iterar sobre las entradas únicas
             const mainA = li.querySelector('a:not([target])');
-            if (!mainA) return;
+            // Ya validamos mainA al crear uniqueEntries, pero una doble verificación no hace daño
+            if (!mainA) return; 
 
-            // Extraer span de tiempo y moverlo al TD sin alterar contenido para smallscripts
+            // Extraer span de tiempo
             const spanTime = mainA.querySelector('span.t');
             const tdTime = document.createElement('td');
             if (spanTime) {
-              // Simplemente usar el texto del span directamente sin crear un nuevo span con clase 't'
-              tdTime.textContent = spanTime.textContent;
+              tdTime.textContent = spanTime.textContent; // Mostrar hora tal cual
             } else {
               tdTime.textContent = '';
             }
 
-            // Obtener texto del partido
+            // Obtener texto del partido (reutilizar lógica de desduplicación)
             let text = mainA.textContent.trim();
             const parts = text.split(/\s+/);
             if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
@@ -183,29 +231,26 @@
           });
 
           table.appendChild(tbody);
-          container.appendChild(table); // Añadir la tabla completa al contenedor
+          container.appendChild(table);
 
-          // Llama a la función para convertir horarios solo si hay tabla
-          if (typeof convertTimes === 'function') {
-            convertTimes(); 
-          }
+          // Ya NO llamamos a convertTimes()
+          // if (typeof convertTimes === 'function') {
+          //  convertTimes(); 
+          // }
         }
 
       } catch (err) {
-        // Muestra un mensaje más discreto en caso de error recurrente
-        const container = document.getElementById('agenda-container');
-        if (!container.querySelector('.error-message')) { // Evita mensajes duplicados
-            const errorP = document.createElement('p');
-            errorP.textContent = 'Error al actualizar la agenda.';
-            errorP.className = 'error-message'; // Clase para identificarlo
-            // Inserta el error después del título si existe, o al principio
-            const titleH2 = container.querySelector('h2');
-            if (titleH2) {
-                titleH2.insertAdjacentElement('afterend', errorP);
-            } else {
-                container.prepend(errorP);
-            }
-        }
+        // Manejo de errores (si fallan todas las peticiones o hay otro error)
+        container.innerHTML = ''; // Limpiar por si acaso
+        const title = document.createElement('h2');
+        title.textContent = 'Agenda deportiva'; // Título genérico en caso de error
+        container.appendChild(title);
+        const errorP = document.createElement('p');
+        errorP.textContent = 'Error al cargar la agenda.';
+        errorP.className = 'error-message'; 
+        errorP.style.textAlign = 'center';
+        errorP.style.padding = '20px 0';
+        container.appendChild(errorP);
         console.error('Error actualizando agenda:', err);
       }
     }
@@ -213,7 +258,7 @@
     // Llama a la función inmediatamente para cargar la agenda al inicio
     updateAgenda();
 
-    // Establece un intervalo para llamar a updateAgenda cada 5 minutos (300000 ms)
+    // Establece un intervalo para llamar a updateAgenda cada minuto (60000 ms)
     setInterval(updateAgenda, 60000);
   </script>
 </body>
