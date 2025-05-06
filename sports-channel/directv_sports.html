@@ -77,7 +77,7 @@
         padding: 5px 10px;
         border-radius: 4px;
         text-decoration: none;
-        font-size: 0.9em;
+        font-size: 1.15em; /* Tamaño aumentado ~4px */
         transition: background-color 0.2s ease, color 0.2s ease;
     }
     .back-button:hover {
@@ -87,7 +87,7 @@
     /* --- Estilo para el Título del Canal (Texto) --- */
     .channel-title-text {
         color: white; /* Color blanco */
-        font-size: 45px; /* Tamaño disminuido */
+        font-size: 45px; /* Tamaño mantenido de la solicitud anterior */
         letter-spacing: 1px; /* Interletrado mantenido */
         font-family: 'CalSans', sans-serif; /* Fuente de título */
         text-align: center;
@@ -151,7 +151,7 @@
         .back-button {
             top: 65px; /* Ajuste posición botón atrás */
             left: 15px;
-            font-size: 0.8em; /* Botón un poco más pequeño en móvil */
+            font-size: 1.05em; /* Tamaño aumentado ~4px en móvil */
             padding: 4px 8px;
         }
         /* Ajuste para título de texto */
@@ -179,7 +179,13 @@
 
   <!-- Contenedor del reproductor -->
   <div class="player-container">
-    <iframe src="https://elcanaldeportivo.com/directvsports.php" allowfullscreen allow="encrypted-media" frameborder="0"></iframe>
+    <iframe
+      src="https://elcanaldeportivo.com/directvsports.php"
+      allowfullscreen
+      allow="encrypted-media"
+      frameborder="0"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media">
+    </iframe>
   </div>
 
 </body>
