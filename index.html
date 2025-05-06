@@ -59,7 +59,7 @@
     @media (max-width: 700px) {
       body { padding: 20px 15px; padding-top: 90px; }
       .site-logo-link { position: absolute; top: 15px; left: 15px; } /* Ajustado para móvil */
-      .site-logo-link img { height: 50px; } /* Tamaño de logo para móvil */
+      .site-logo-link img { height: 42px; } /* Tamaño de logo para móvil */
       h1 { 
         font-size: 1.8em; /* Tamaño específico para móvil */ 
         margin-bottom: 30px; 
@@ -67,7 +67,7 @@
       }
       #channel-grid { gap: 15px; justify-content: space-around; }
       .channel-item img { 
-        width: 120px; /* Ancho para móvil */
+        width: 126px; /* Ancho para móvil */
         height: auto; /* Altura automática también para móvil */
       }
       #agenda-container { padding: 15px; }
@@ -264,11 +264,6 @@
 
           table.appendChild(tbody);
           container.appendChild(table);
-
-          // Ya NO llamamos a convertTimes()
-          // if (typeof convertTimes === 'function') {
-          //  convertTimes(); 
-          // }
         }
 
       } catch (err) {
