@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fox Sports</title> <!-- Título actualizado -->
+  <link rel="icon" href="../img/icon.png" type="image/png">
+  <style>
+    /* --- Estilos Base y Fuentes (Copiados de tyc_sports.html) --- */
+    @font-face { 
+      font-family: 'CalSans'; 
+      src: url('../fonts/CalSans-Regular.ttf') format('opentype'); 
+    }
+    @font-face { 
+      font-family: 'DMSans'; 
+      src: url('../fonts/DMSans-Regular.ttf') format('truetype'); 
+    }
+    body {
+      font-family: 'DMSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      background-color: transparent; /* Fondo del body transparente */
+      margin: 0; 
+      padding: 20px; /* Padding general */
+      padding-top: 100px; /* Espacio para logo y botón atrás */
+      min-height: 100vh; 
+      position: relative; 
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #333;
+      z-index: 1; /* Contenido sobre el fondo */
+    }
+    /* --- Fondo Desenfocado (Copiado de tyc_sports.html) --- */
+    body::before {
+      content: ''; 
+      position: fixed; 
+      top: 0; 
+      left: 0;
+      width: 100%; 
+      height: 100%;
+      background-image: url('../img/background.webp'); /* Ruta ajustada */
+      background-size: cover; 
+      background-position: center; 
+      filter: blur(20px); 
+      transform: scale(1.1); 
+      z-index: -1; /* Detrás del contenido */
+    }
+    /* --- Logo del Sitio (Copiado de tyc_sports.html) --- */
+    .site-logo-link { 
+      position: absolute; 
+      top: 20px; 
+      left: 20px; 
+      z-index: 10; 
+      display: block;
+    }
+    .site-logo-link img { 
+      height: 42px; /* Altura ajustada como en index.html */
+      width: auto; 
+      display: block; 
+    }
+     /* --- Botón Volver (Copiado de tyc_sports.html) --- */
+    .back-button {
+        position: absolute;
+        top: 80px; /* Ajustado para estar debajo del logo */
+        left: 25px; /* Ligeramente indentado */
+        z-index: 10;
+    }
+    .back-button img {
+        width: 30px;
+        height: auto;
+        display: block;
+        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
+    }
+    /* --- Título del Canal (Copiado de tyc_sports.html) --- */
+    .channel-title-img {
+        display: block;
+        max-width: 300px;
+        width: 70%;
+        height: auto;
+        margin: -20px auto 20px auto; /* Ajuste de margen superior negativo */
+        position: relative;
+        z-index: 1;
+        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
+    }
+    /* --- Contenedor del Reproductor (Copiado de tyc_sports.html) --- */
+    .player-container {
+        max-width: 850px; /* Ancho máximo */
+        width: 100%; /* Ocupa el ancho disponible hasta el máximo */
+        margin: 0 auto; /* Centrado */
+        position: relative;
+        padding-top: 56.25%; /* Proporción 16:9 */
+        height: 0;
+        overflow: hidden;
+        background-color: #000; /* Fondo negro mientras carga */
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        z-index: 0; /* Detrás de elementos posicionados absolutamente si es necesario */
+    }
+    .player-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none; /* Sin borde */
+    }
+    /* --- Media Queries para Responsividad (Copiado de tyc_sports.html) --- */
+    @media (max-width: 900px) {
+        .player-container {
+            max-width: 95%; 
+        }
+        .back-button {
+            top: 75px; /* Ajuste ligero */
+            left: 20px;
+        }
+         .channel-title-img {
+            max-width: 250px; 
+            margin-top: -15px;
+        }
+    }
+    @media (max-width: 700px) {
+      body { 
+        padding: 15px; 
+        padding-top: 90px; /* Más espacio arriba en móvil */
+      }
+      .site-logo-link { 
+        top: 15px; 
+        left: 15px; 
+      }
+      .site-logo-link img { 
+        height: 35px; /* Logo más pequeño en móvil */
+      }
+      .back-button {
+          top: 65px; /* Ajuste posición botón atrás */
+          left: 15px;
+      }
+      .back-button img {
+          width: 25px; /* Botón atrás más pequeño */
+      }
+      .channel-title-img {
+          max-width: 200px; 
+          width: 60%;
+          margin: -10px auto 10px auto; /* Ajusta márgenes */
+      }
+      .player-container {
+          max-width: 100%; /* Ocupa todo el ancho */
+          border-radius: 4px; 
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo del sitio -->
+  <a href="../index.html" class="site-logo-link">
+    <img src="../img/logo.png" alt="Proto TV Logo"> <!-- Ruta ajustada -->
+  </a>
+  
+  <!-- Botón para volver al índice -->
+  <a href="../index.html" class="back-button">
+    <img src="../img/back.png" alt="Volver"> <!-- Ruta ajustada -->
+  </a>
+
+  <!-- Título del canal -->
+  <img src="../img/foxsports_title.png" class="channel-title-img" alt="Fox Sports"> <!-- Imagen y Alt actualizados -->
+
+  <!-- Contenedor del reproductor -->
+  <div class="player-container">
+    <iframe 
+      src="https://bestleague.one/mpdk/?get=aHR0cHM6Ly9vdHRiLmxpdmUuY2Yud3cuYWl2LWNkbi5uZXQvaWFkLW5pdHJvL2xpdmUvY2xpZW50cy9kYXNoL2VuYy9mZHg3NHpxemh1L291dC92MS83ZDdhOGM2OTgxYTg0MmI5OGE2ODNlOWZiZmU1MWQxNy9jZW5jLm1wZA==&key=OWYzMjdkMjRjNjZmYmQ4NGUxNWFiNWM5ZWFkN2M3YTQ=&key2=ODM4MzcxODU1MjljMGM0MDQ4ZjgxMzg2YzJkMzY0MjY="
+      allowfullscreen 
+      allow="encrypted-media"
+      frameborder="0"> 
+    </iframe>
+  </div>
+
+</body>
+</html>
