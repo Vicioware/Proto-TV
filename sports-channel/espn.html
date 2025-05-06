@@ -120,6 +120,21 @@
         height: 100%;
         border: none;
     }
+    .fullscreen-button {
+        display: block;
+        margin: 15px auto;
+        padding: 10px 20px;
+        font-size: 1em;
+        color: white;
+        background-color: #333;
+        border: 1px solid #555;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .fullscreen-button:hover {
+        background-color: #555;
+    }
     /* --- Media Queries para Responsividad --- */
     @media (max-width: 900px) {
         .player-container {
@@ -165,6 +180,10 @@
             max-width: 100%; /* Ocupa todo el ancho */
             border-radius: 4px; /* Menos redondeo */
         }
+        .fullscreen-button {
+            font-size: 0.9em;
+            padding: 8px 15px;
+        }
     }
   </style>
 </head>
@@ -182,6 +201,7 @@
   <!-- Contenedor del reproductor -->
   <div class="player-container">
     <iframe
+      id="video-player" 
       src="https://tvlibreonline.me/html/fl/?get=RVNQTjJIRA"
       allowfullscreen
       allow="encrypted-media"
@@ -190,5 +210,23 @@
     </iframe>
   </div>
 
+  <!-- Botón de Pantalla Completa -->
+  <button class="fullscreen-button" id="fullscreen-btn">Pantalla Completa</button>
+  <script>
+    const fullscreenButton = document.getElementById('fullscreen-btn');
+    const iframePlayer = document.getElementById('video-player');
+
+    fullscreenButton.addEventListener('click', () => {
+      if (iframePlayer.requestFullscreen) {
+        iframePlayer.requestFullscreen();
+      } else if (iframePlayer.mozRequestFullScreen) { /* Firefox */
+        iframePlayer.mozRequestFullScreen();
+      } else if (iframePlayer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        iframePlayer.webkitRequestFullscreen();
+      } else if (iframePlayer.msRequestFullscreen) { /* IE/Edge */
+        iframePlayer.msRequestFullscreen();
+      }
+    });
+  </script>
 </body>
 </html>
