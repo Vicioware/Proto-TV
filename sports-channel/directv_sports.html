@@ -113,7 +113,22 @@
             top: 75px; /* Ajuste ligero */
             left: 20px;
         }
-         .channel-title-img {
+        .channel-title-text {
+            font-size: 2em;
+            margin: -5px auto 20px auto;
+        }
+        .channel-title-text {
+            color: white; /* Texto blanco para contraste */
+            text-align: center;
+            font-family: 'CalSans', sans-serif; /* Fuente de título */
+            font-size: 2.5em; /* Tamaño del texto */
+            margin: -10px auto 25px auto; /* Márgenes ajustados para texto */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para legibilidad */
+            position: relative;
+            z-index: 1;
+            max-width: 90%; /* Evitar que sea demasiado ancho */
+        }
+        .channel-title-img {
             max-width: 250px;
             margin-top: -15px;
         }
@@ -137,6 +152,10 @@
       .back-button img {
           width: 25px; /* Botón atrás más pequeño */
       }
+      .channel-title-text {
+          font-size: 1.8em;
+          margin: 0 auto 15px auto;
+      }
       .channel-title-img {
           max-width: 200px;
           width: 60%;
@@ -158,6 +177,8 @@
   <a href="../index.html" class="back-button">
     <img src="../img/back.png" alt="Volver"> <!-- Alt añadido -->
   </a>
+
+  <h2 class="channel-title-text">DirecTV Sports en vivo</h2>
 
   <!-- Título del canal -->
   <img src="../img/directv_title.png" class="channel-title-img" alt="DirecTV Sports"> <!-- Alt añadido -->
