@@ -6,50 +6,63 @@
   <title>DirecTV Sports</title>
   <link rel="icon" href="../img/icon.png" type="image/png">
   <style>
+    /* --- Estilos Base y Fuentes (Adaptados de tyc_sports.html) --- */
     @font-face {
       font-family: 'CalSans';
       src: url('../fonts/CalSans-Regular.ttf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
     }
-
     @font-face {
       font-family: 'DMSans';
       src: url('../fonts/DMSans-Regular.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
     }
-
     body {
-      font-family: 'NorthSeanoDemo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      background: linear-gradient(to bottom, #b6359c, #ef0a6a);
+      font-family: 'DMSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      background-color: transparent; /* Fondo del body transparente */
       margin: 0;
-      padding: 20px;
-      padding-top: 100px;
-      line-height: 1.5;
+      padding: 20px; /* Padding general */
+      padding-top: 100px; /* Espacio para logo y botón atrás */
       min-height: 100vh;
       position: relative;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
+      color: #333;
+      z-index: 1; /* Contenido sobre el fondo */
     }
+    /* --- Fondo Desenfocado (Adaptado de tyc_sports.html) --- */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../img/background.webp'); /* Ruta ajustada */
+      background-size: cover;
+      background-position: center;
+      filter: blur(20px);
+      transform: scale(1.1);
+      z-index: -1; /* Detrás del contenido */
+    }
+    /* --- Logo del Sitio (Adaptado de tyc_sports.html) --- */
     .site-logo-link {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        z-index: 10;
-        display: block;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      display: block;
     }
     .site-logo-link img {
-        height: 60px;
-        width: auto;
-        display: block;
+      height: 42px; /* Altura ajustada como en index.html */
+      width: auto;
+      display: block;
     }
+     /* --- Botón Volver (Tomado de tyc_sports.html) --- */
     .back-button {
         position: absolute;
-        top: 110px;
-        left: 30px;
+        top: 80px; /* Ajustado para estar debajo del logo */
+        left: 25px; /* Ligeramente indentado */
         z-index: 10;
     }
     .back-button img {
@@ -58,28 +71,30 @@
         display: block;
         filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
     }
+    /* --- Título del Canal (Tomado de tyc_sports.html) --- */
     .channel-title-img {
         display: block;
         max-width: 300px;
         width: 70%;
         height: auto;
-        margin: -40px auto 20px auto;
+        margin: -20px auto 20px auto; /* Ajuste de margen superior negativo */
         position: relative;
         z-index: 1;
         filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
     }
+    /* --- Contenedor del Reproductor (Tomado de tyc_sports.html) --- */
     .player-container {
-        max-width: 850px;
-        width: 100%;
-        margin: 0 auto;
+        max-width: 850px; /* Ancho máximo */
+        width: 100%; /* Ocupa el ancho disponible hasta el máximo */
+        margin: 0 auto; /* Centrado */
         position: relative;
-        padding-top: 56.25%; /* 16:9 */
+        padding-top: 56.25%; /* Proporción 16:9 */
         height: 0;
         overflow: hidden;
-        background-color: #000;
+        background-color: #000; /* Fondo negro mientras carga */
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        z-index: 0;
+        z-index: 0; /* Detrás de elementos posicionados absolutamente si es necesario */
     }
     .player-container iframe {
         position: absolute;
@@ -87,66 +102,69 @@
         left: 0;
         width: 100%;
         height: 100%;
-        border: none;
+        border: none; /* Sin borde */
     }
+    /* --- Media Queries para Responsividad (Adaptado de tyc_sports.html) --- */
     @media (max-width: 900px) {
         .player-container {
-            max-width: 95%; /* Usa porcentaje para adaptarse */
+            max-width: 95%;
         }
         .back-button {
-            top: 100px;
-            left: 25px;
+            top: 75px; /* Ajuste ligero */
+            left: 20px;
         }
          .channel-title-img {
-            max-width: 250px; /* Título un poco más pequeño */
-            margin: -30px auto 15px auto;
+            max-width: 250px;
+            margin-top: -15px;
         }
     }
-
-    /* Para móviles */
-    @media (max-width: 600px) {
-        body {
-            padding: 15px;
-            padding-top: 80px; /* Menos padding superior */
-        }
-        .site-logo-link {
-            top: 15px;
-            left: 15px;
-        }
-        .site-logo-link img {
-            height: 50px; /* Logo más pequeño */
-        }
-        .back-button {
-            top: 85px; /* Ajusta posición del botón atrás */
-            left: 15px;
-        }
-        .back-button img {
-            width: 25px; /* Botón atrás más pequeño */
-        }
-        .channel-title-img {
-            max-width: 200px; /* Título más pequeño */
-            width: 60%;
-            margin: -20px auto 10px auto; /* Ajusta márgenes */
-        }
-        .player-container {
-            max-width: 100%; /* Ocupa todo el ancho */
-            border-radius: 4px; /* Menos redondeo */
-        }
+    @media (max-width: 700px) {
+      body {
+        padding: 15px;
+        padding-top: 90px; /* Más espacio arriba en móvil */
+      }
+      .site-logo-link {
+        top: 15px;
+        left: 15px;
+      }
+      .site-logo-link img {
+        height: 35px; /* Logo más pequeño en móvil */
+      }
+      .back-button {
+          top: 65px; /* Ajuste posición botón atrás */
+          left: 15px;
+      }
+      .back-button img {
+          width: 25px; /* Botón atrás más pequeño */
+      }
+      .channel-title-img {
+          max-width: 200px;
+          width: 60%;
+          margin: -10px auto 10px auto; /* Ajusta márgenes */
+      }
+      .player-container {
+          max-width: 100%; /* Ocupa todo el ancho */
+          border-radius: 4px;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Logo del sitio -->
   <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png">
+    <img src="../img/logo.png" alt="Proto TV Logo"> <!-- Alt añadido -->
   </a>
+  <!-- Botón para volver al índice -->
   <a href="../index.html" class="back-button">
-    <img src="../img/back.png">
+    <img src="../img/back.png" alt="Volver"> <!-- Alt añadido -->
   </a>
 
-  <img src="../img/directv_title.png" class="channel-title-img">
+  <!-- Título del canal -->
+  <img src="../img/directv_title.png" class="channel-title-img" alt="DirecTV Sports"> <!-- Alt añadido -->
 
+  <!-- Contenedor del reproductor -->
   <div class="player-container">
-    <iframe src="https://elcanaldeportivo.com/directvsports.php" allowfullscreen allow="encrypted-media"></iframe>
+    <iframe src="https://elcanaldeportivo.com/directvsports.php" allowfullscreen allow="encrypted-media" frameborder="0"></iframe> <!-- frameborder="0" añadido -->
   </div>
 
 </body>
