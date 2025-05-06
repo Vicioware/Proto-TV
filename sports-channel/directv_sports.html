@@ -26,7 +26,7 @@
       background-color: transparent; /* Fondo del body transparente */
       margin: 0;
       padding: 20px; /* Padding general */
-      padding-top: 100px; /* Espacio para logo */
+      padding-top: 100px; /* Espacio para logo y botón atrás */
       min-height: 100vh;
       position: relative;
       box-sizing: border-box;
@@ -65,11 +65,30 @@
         width: auto;
         display: block;
     }
+    /* --- Botón Volver (Rectángulo blanco vacío) --- */
+    .back-button {
+        position: absolute;
+        top: 80px; /* Posición debajo del logo */
+        left: 25px;
+        z-index: 10;
+        border: 1px solid white; /* Borde blanco */
+        background-color: transparent; /* Fondo transparente */
+        color: white; /* Texto blanco */
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.9em;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .back-button:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Ligero fondo blanco al pasar el ratón */
+    }
+
     /* --- Estilo para el Título del Canal (Texto) --- */
     .channel-title-text {
         color: white; /* Color blanco */
-        font-size: 51px; /* Tamaño disminuido */
-        letter-spacing: 1px; /* Interletrado añadido */
+        font-size: 45px; /* Tamaño disminuido */
+        letter-spacing: 1px; /* Interletrado mantenido */
         font-family: 'CalSans', sans-serif; /* Fuente de título */
         text-align: center;
         margin: -10px auto 25px auto; /* Márgenes ajustados */
@@ -82,7 +101,7 @@
         max-width: 850px;
         width: 100%;
         margin: 0 auto;
-        position: relative; /* Necesario para posicionar el botón Volver interno */
+        position: relative; /* Mantenido por si acaso */
         padding-top: 56.25%; /* 16:9 */
         height: 0;
         overflow: hidden;
@@ -99,32 +118,18 @@
         height: 100%;
         border: none;
     }
-    /* --- Nuevo Botón Volver sobre el Iframe --- */
-    .iframe-back-button {
-        position: absolute;
-        top: 10px; /* Espacio desde arriba */
-        left: 10px; /* Espacio desde la izquierda */
-        z-index: 20; /* Asegurar que esté sobre el iframe */
-        background-color: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
-        color: white;
-        padding: 5px 10px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 0.9em;
-        transition: background-color 0.2s ease;
-    }
-    .iframe-back-button:hover {
-        background-color: rgba(0, 0, 0, 0.8); /* Más oscuro al pasar el ratón */
-    }
-
     /* --- Media Queries para Responsividad --- */
     @media (max-width: 900px) {
         .player-container {
             max-width: 95%;
         }
+        .back-button {
+            top: 75px; /* Ajuste ligero */
+            left: 20px;
+        }
          /* Ajuste para título de texto */
          .channel-title-text {
-            font-size: 41px; /* Reducir tamaño en pantallas medianas */
+            font-size: 38px; /* Reducir tamaño en pantallas medianas */
             margin: -5px auto 20px auto;
          }
     }
@@ -143,20 +148,20 @@
              /* Logo más pequeño en móvil */
             height: 35px;
         }
+        .back-button {
+            top: 65px; /* Ajuste posición botón atrás */
+            left: 15px;
+            font-size: 0.8em; /* Botón un poco más pequeño en móvil */
+            padding: 4px 8px;
+        }
         /* Ajuste para título de texto */
         .channel-title-text {
-            font-size: 32px; /* Reducir más en móviles */
+            font-size: 28px; /* Reducir más en móviles */
             margin: 0 auto 15px auto;
         }
         .player-container {
             max-width: 100%; /* Ocupa todo el ancho */
             border-radius: 4px; /* Menos redondeo */
-        }
-        .iframe-back-button {
-            font-size: 0.8em; /* Botón un poco más pequeño en móvil */
-            padding: 4px 8px;
-            top: 5px;
-            left: 5px;
         }
     }
   </style>
@@ -166,15 +171,14 @@
   <a href="../index.html" class="site-logo-link">
     <img src="../img/logo.png" alt="Proto TV Logo">
   </a>
-  <!-- Botón de volver anterior eliminado -->
+  <!-- Botón para volver al índice (estilo rectángulo) -->
+  <a href="../index.html" class="back-button">Volver</a>
 
   <!-- Título del canal como texto -->
   <h2 class="channel-title-text">DirecTV Sports</h2>
 
   <!-- Contenedor del reproductor -->
   <div class="player-container">
-    <!-- Nuevo Botón Volver -->
-    <a href="../index.html" class="iframe-back-button">Volver</a>
     <iframe src="https://elcanaldeportivo.com/directvsports.php" allowfullscreen allow="encrypted-media" frameborder="0"></iframe>
   </div>
 
