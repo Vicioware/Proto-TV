@@ -6,6 +6,7 @@
   <title>ESPN Premium</title>
   <link rel="icon" href="../img/icon.png" type="image/png">
   <style>
+    /* --- Estilos copiados de tnt_sports.html --- */
     @font-face {
       font-family: 'CalSans';
       src: url('../fonts/CalSans-Regular.ttf') format('opentype');
@@ -21,11 +22,12 @@
     }
 
     body {
-      font-family: 'NorthSeanoDemo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      background: linear-gradient(to bottom, #b6359c, #ef0a6a);
+      /* Usando DMSans como fuente principal y manteniendo el fondo desenfocado */
+      font-family: 'DMSans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      background-color: transparent; /* Fondo del body transparente */
       margin: 0;
-      padding: 20px;
-      padding-top: 100px;
+      padding: 20px; /* Padding general */
+      padding-top: 100px; /* Espacio para logo y botón atrás */
       line-height: 1.5;
       min-height: 100vh;
       position: relative;
@@ -33,7 +35,25 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      color: #333; /* Color de texto por defecto */
+      z-index: 1; /* Contenido sobre el fondo */
     }
+     /* --- Fondo Desenfocado --- */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../img/background.webp'); /* Asegúrate que esta ruta es correcta */
+      background-size: cover;
+      background-position: center;
+      filter: blur(20px);
+      transform: scale(1.1);
+      z-index: -1; /* Detrás del contenido */
+    }
+
     .site-logo-link {
         position: absolute;
         top: 20px;
@@ -42,38 +62,49 @@
         display: block;
     }
     .site-logo-link img {
-        height: 60px;
+        /* Ajustando tamaño del logo principal como en otras páginas */
+        height: 42px;
         width: auto;
         display: block;
     }
+    /* --- Botón Volver (Rectángulo blanco vacío) --- */
     .back-button {
         position: absolute;
-        top: 110px;
-        left: 30px;
+        top: 80px; /* Posición debajo del logo */
+        left: 25px;
         z-index: 10;
+        border: 1px solid white; /* Borde blanco */
+        background-color: transparent; /* Fondo transparente */
+        color: white; /* Texto blanco */
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 1.15em; /* Tamaño aumentado ~4px */
+        transition: background-color 0.2s ease, color 0.2s ease;
     }
-    .back-button img {
-        width: 30px;
-        height: auto;
-        display: block;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
+    .back-button:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Ligero fondo blanco al pasar el ratón */
     }
-    .channel-title-img {
-        display: block;
-        max-width: 300px;
-        width: 70%;
-        height: auto;
-        margin: -40px auto 20px auto;
+
+    /* --- Estilo para el Título del Canal (Texto) --- */
+    .channel-title-text {
+        color: white; /* Color blanco */
+        font-size: 45px; /* Tamaño similar a DirecTV */
+        letter-spacing: 1px; /* Interletrado similar a DirecTV */
+        font-family: 'CalSans', sans-serif; /* Fuente de título */
+        text-align: center;
+        margin: -10px auto 25px auto; /* Márgenes ajustados */
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para legibilidad */
         position: relative;
         z-index: 1;
-        filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.10));
+        max-width: 90%;
     }
     .player-container {
         max-width: 850px;
         width: 100%;
         margin: 0 auto;
         position: relative;
-        padding-top: 56.25%; /* 16:9 */
+        padding-top: 37%; /* 16:9 -> Ajustado a 37% como TNT */
         height: 0;
         overflow: hidden;
         background-color: #000;
@@ -89,44 +120,46 @@
         height: 100%;
         border: none;
     }
+    /* --- Media Queries para Responsividad --- */
     @media (max-width: 900px) {
         .player-container {
-            max-width: 95%; /* Usa porcentaje para adaptarse */
+            max-width: 95%;
         }
         .back-button {
-            top: 100px;
-            left: 25px;
+            top: 75px; /* Ajuste ligero */
+            left: 20px;
         }
-         .channel-title-img {
-            max-width: 250px; /* Título un poco más pequeño */
-            margin: -30px auto 15px auto;
-        }
+         /* Ajuste para título de texto */
+         .channel-title-text {
+            font-size: 38px; /* Reducir tamaño en pantallas medianas */
+            margin: -5px auto 20px auto;
+         }
     }
 
     /* Para móviles */
-    @media (max-width: 600px) {
+    @media (max-width: 700px) { /* Consistencia con DirecTV */
         body {
             padding: 15px;
-            padding-top: 80px; /* Menos padding superior */
+            padding-top: 90px; /* Más espacio arriba en móvil */
         }
         .site-logo-link {
             top: 15px;
             left: 15px;
         }
         .site-logo-link img {
-            height: 50px; /* Logo más pequeño */
+             /* Logo más pequeño en móvil */
+            height: 35px;
         }
         .back-button {
-            top: 85px; /* Ajusta posición del botón atrás */
+            top: 65px; /* Ajuste posición botón atrás */
             left: 15px;
+            font-size: 1.05em; /* Tamaño aumentado ~4px en móvil */
+            padding: 4px 8px;
         }
-        .back-button img {
-            width: 25px; /* Botón atrás más pequeño */
-        }
-        .channel-title-img {
-            max-width: 200px; /* Título más pequeño */
-            width: 60%;
-            margin: -20px auto 10px auto; /* Ajusta márgenes */
+        /* Ajuste para título de texto */
+        .channel-title-text {
+            font-size: 28px; /* Reducir más en móviles */
+            margin: 0 auto 15px auto;
         }
         .player-container {
             max-width: 100%; /* Ocupa todo el ancho */
@@ -136,17 +169,25 @@
   </style>
 </head>
 <body>
+  <!-- Logo del sitio -->
   <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png">
+    <img src="../img/logo.png" alt="Proto TV Logo"> <!-- Alt añadido -->
   </a>
-  <a href="../index.html" class="back-button">
-    <img src="../img/back.png">
-  </a>
+  <!-- Botón para volver al índice (estilo rectángulo) -->
+  <a href="../index.html" class="back-button">Volver</a>
 
-  <img src="../img/espn_title.png" class="channel-title-img">
+  <!-- Título del canal como texto -->
+  <h2 class="channel-title-text">ESPN Premium</h2> <!-- Título cambiado a texto -->
 
+  <!-- Contenedor del reproductor -->
   <div class="player-container">
-    <iframe src="https://tvlibreonline.me/html/fl/?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE" allowfullscreen allow="encrypted-media"></iframe>
+    <iframe
+      src="https://tvlibreonline.me/html/fl/?get=Rm94X1Nwb3J0c19QcmVtaXVuX0hE"
+      allowfullscreen
+      allow="encrypted-media"
+      frameborder="0"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> <!-- Sandbox y frameborder añadidos -->
+    </iframe>
   </div>
 
 </body>
