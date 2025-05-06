@@ -79,8 +79,9 @@
         padding: 5px 10px;
         border-radius: 4px;
         text-decoration: none;
-        font-size: 1.15em; /* Tamaño aumentado ~4px */
+        font-size: 1.15em; 
         transition: background-color 0.2s ease, color 0.2s ease;
+        cursor: pointer; /* Añadido para consistencia */
     }
     .back-button:hover {
         background-color: rgba(255, 255, 255, 0.1); /* Ligero fondo blanco al pasar el ratón */
@@ -102,15 +103,15 @@
     .player-container {
         max-width: 850px;
         width: 100%;
-        margin: 0 auto;
+        margin: 0 auto; /* Centrado, el botón de pantalla completa se posicionará absoluto respecto al body */
         position: relative;
-        padding-top: 36.5%; /* 16:9 -> Ajustado a 37% como TNT */
+        padding-top: 36.5%; 
         height: 0;
         overflow: hidden;
         background-color: #000;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        z-index: 0;
+        z-index: 0; /* Asegura que el botón de pantalla completa pueda estar sobre él si es necesario */
     }
     .player-container iframe {
         position: absolute;
@@ -120,69 +121,80 @@
         height: 100%;
         border: none;
     }
+    /* Estilo para el botón de pantalla completa (similar al botón Volver) */
     .fullscreen-button {
-        display: block;
-        margin: 15px auto;
-        padding: 10px 20px;
-        font-size: 1em;
+        position: absolute; /* Posicionamiento absoluto como el botón Volver */
+        top: 80px; /* Misma posición vertical que el botón Volver */
+        right: 25px; /* Posicionado a la derecha */
+        z-index: 10; /* Mismo z-index que el botón Volver */
+        border: 1px solid white;
+        background-color: transparent;
         color: white;
-        background-color: #333;
-        border: 1px solid #555;
-        border-radius: 5px;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none; /* Aunque es un button, por consistencia visual */
+        font-size: 1.15em; 
+        transition: background-color 0.2s ease, color 0.2s ease;
         cursor: pointer;
-        transition: background-color 0.2s ease;
     }
     .fullscreen-button:hover {
-        background-color: #555;
+        background-color: rgba(255, 255, 255, 0.1);
     }
+
     /* --- Media Queries para Responsividad --- */
     @media (max-width: 900px) {
         .player-container {
             max-width: 95%;
         }
         .back-button {
-            top: 75px; /* Ajuste ligero */
+            top: 75px; 
             left: 20px;
+        }
+        .fullscreen-button {
+            top: 75px;
+            right: 20px;
         }
          /* Ajuste para título de texto */
          .channel-title-text {
-            font-size: 38px; /* Reducir tamaño en pantallas medianas */
+            font-size: 38px; 
             margin: -5px auto 20px auto;
          }
     }
 
     /* Para móviles */
-    @media (max-width: 700px) { /* Consistencia con DirecTV */
+    @media (max-width: 700px) { 
         body {
             padding: 15px;
-            padding-top: 90px; /* Más espacio arriba en móvil */
+            padding-top: 90px; 
         }
         .site-logo-link {
             top: 15px;
             left: 15px;
         }
         .site-logo-link img {
-             /* Logo más pequeño en móvil */
             height: 35px;
         }
         .back-button {
-            top: 65px; /* Ajuste posición botón atrás */
+            top: 65px; 
             left: 15px;
-            font-size: 1.05em; /* Tamaño aumentado ~4px en móvil */
+            font-size: 1.05em; 
+            padding: 4px 8px;
+        }
+        .fullscreen-button {
+            top: 65px;
+            right: 15px;
+            font-size: 1.05em;
             padding: 4px 8px;
         }
         /* Ajuste para título de texto */
         .channel-title-text {
-            font-size: 28px; /* Reducir más en móviles */
+            font-size: 28px; 
             margin: 0 auto 15px auto;
         }
         .player-container {
-            max-width: 100%; /* Ocupa todo el ancho */
-            border-radius: 4px; /* Menos redondeo */
-        }
-        .fullscreen-button {
-            font-size: 0.9em;
-            padding: 8px 15px;
+            max-width: 100%; 
+            border-radius: 4px; 
+            margin-top: 30px; /* Añadido un poco de margen superior para que no se solape con los botones en móvil */
         }
     }
   </style>
@@ -190,13 +202,16 @@
 <body>
   <!-- Logo del sitio -->
   <a href="../index.html" class="site-logo-link">
-    <img src="../img/logo.png" alt="Proto TV Logo"> <!-- Alt añadido -->
+    <img src="../img/logo.png" alt="Proto TV Logo"> 
   </a>
   <!-- Botón para volver al índice (estilo rectángulo) -->
   <a href="../index.html" class="back-button">Volver</a>
 
+  <!-- Botón de Pantalla Completa -->
+  <button class="fullscreen-button" id="fullscreen-btn">Completa</button> <!-- Texto acortado para mejor ajuste -->
+
   <!-- Título del canal como texto -->
-  <h2 class="channel-title-text">ESPN Premium</h2> <!-- Título cambiado a texto -->
+  <h2 class="channel-title-text">ESPN Premium</h2> 
 
   <!-- Contenedor del reproductor -->
   <div class="player-container">
@@ -206,12 +221,10 @@
       allowfullscreen
       allow="encrypted-media"
       frameborder="0"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> <!-- Sandbox y frameborder añadidos -->
+      sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> 
     </iframe>
   </div>
 
-  <!-- Botón de Pantalla Completa -->
-  <button class="fullscreen-button" id="fullscreen-btn">Pantalla Completa</button>
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
     const iframePlayer = document.getElementById('video-player');
