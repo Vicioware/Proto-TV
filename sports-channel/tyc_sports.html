@@ -119,6 +119,24 @@
         height: 100%;
         border: none; /* Sin borde */
     }
+    .fullscreen-button {
+        position: absolute;
+        top: 80px;
+        right: 25px;
+        z-index: 10;
+        border: 1px solid white;
+        background-color: transparent;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 1.15em;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        cursor: pointer;
+    }
+    .fullscreen-button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
     /* --- Media Queries para Responsividad (Adaptado de tnt_sports.html) --- */
     @media (max-width: 900px) {
         .player-container {
@@ -133,6 +151,10 @@
             font-size: 38px; /* Reducir tamaño en pantallas medianas */
             margin: -5px auto 20px auto;
          }
+         .fullscreen-button {
+            top: 75px;
+            right: 20px;
+        }
     }
 
     /* Para móviles (Adaptado de tnt_sports.html) */
@@ -164,6 +186,12 @@
           max-width: 100%; /* Ocupa todo el ancho */
           border-radius: 4px; /* Menos redondeo */
       }
+      .fullscreen-button {
+            top: 70px;
+            right: 15px;
+            font-size: 1.05em;
+            padding: 4px 8px;
+        }
     }
   </style>
 </head>
@@ -175,7 +203,7 @@
 
   <!-- Botón para volver al índice (estilo rectángulo con texto) -->
   <a href="../index.html" class="back-button">Volver</a>
-
+  <button class="fullscreen-button" id="fullscreen-btn">Pantalla completa</button>
   <!-- Título del canal como texto -->
   <h2 class="channel-title-text">TyC Sports</h2>
 
@@ -189,6 +217,34 @@
       sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> <!-- Sandbox añadido -->
     </iframe>
   </div>
+  <script>
+    const fullscreenButton = document.getElementById('fullscreen-btn');
+    const playerIframe = document.getElementById('video-player');
 
+    fullscreenButton.addEventListener('click', () => {
+      if (playerIframe.requestFullscreen) {
+        playerIframe.requestFullscreen();
+      } else if (playerIframe.mozRequestFullScreen) { /* Firefox */
+        playerIframe.mozRequestFullScreen();
+      } else if (playerIframe.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        playerIframe.webkitRequestFullscreen();
+      } else if (playerIframe.msRequestFullscreen) { /* IE/Edge */
+        playerIframe.msRequestFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        // Opcional: Actualizar el texto del botón
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+        // Opcional: Actualizar el texto del botón
+    });
+    document.addEventListener('mozfullscreenchange', () => {
+        // Opcional: Actualizar el texto del botón
+    });
+    document.addEventListener('MSFullscreenChange', () => {
+        // Opcional: Actualizar el texto del botón
+    });
+  </script>
 </body>
 </html>
