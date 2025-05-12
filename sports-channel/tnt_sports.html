@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TNT Sports</title>
   <link rel="icon" href="../img/icon.png" type="image/png">
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
   <style>
     @font-face {
       font-family: 'CalSans';
@@ -103,7 +104,7 @@
         width: 100%;
         margin: 0 auto;
         position: relative;
-        padding-top: 36.5%; /* 16:9 */
+        padding-top: 56.25%; /* 16:9 Aspect Ratio. Ajusta si es necesario (ej. 45% para TNT Sports HD) */
         height: 0;
         overflow: hidden;
         background-color: #000;
@@ -111,13 +112,18 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         z-index: 0;
     }
-    .player-container iframe {
+    .player-container iframe,
+    .player-container video { /* Aplicar estilos también al tag video */
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         border: none;
+    }
+
+    .hidden {
+        display: none !important;
     }
     .options-container {
         display: flex;
@@ -281,35 +287,43 @@
   <div class="player-container">
     <iframe
       id="video-player"
-      src="https://tvlibreonline.me/html/fl/?get=VE5UX1Nwb3J0c19IRA"
+      src="https://elcanaldeportivo.com/tntsports.php"
       allowfullscreen
       allow="encrypted-media"
       frameborder="0"
       sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> <!-- Sandbox añadido por consistencia/seguridad -->
     </iframe>
+    <video id="mpd-video-player" class="hidden" controls autoplay></video>
   </div>
   <div class="options-container">
     <button class="option-button" data-url="https://elcanaldeportivo.com/tntsports.php">Opción 1</button>
     <button class="option-button" data-url="https://rereyano.ru/player/3/75">Opción 2</button>
     <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed.php">Opción 3</button>
     <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed3.php">Opción 4</button>
+    <button class="option-button" data-url="https://tvlibreonline.me/html/fl/?get=VE5UX1Nwb3J0c19IRA">Opción 5</button>
+    <button class="option-button" data-url="https://edge-mix01-mus.cvattv.com.ar/tok_eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxNzQ3MjYyMzY5Iiwic2lwIjoiMzguNTIuMjE3LjIxNyIsInBhdGgiOiIvbGl2ZS9jNmVkcy9UTlRfU3BvcnRzX0hEL1NBX0xpdmVfZGFzaF9lbmMvIiwic2Vzc2lvbl9jZG5faWQiOiJiYjAxMTE3NGQ4M2Y1ZmZlIiwic2Vzc2lvbl9pZCI6IiIsImNsaWVudF9pZCI6IiIsImRldmljZV9pZCI6IiIsIm1heF9zZXNzaW9ucyI6MCwic2Vzc2lvbl9kdXJhdGlvbiI6MCwidXJsIjoiaHR0cHM6Ly8yMDEuMjM1LjY2LjExNSIsImF1ZCI6IjEzNiIsInNvdXJjZXMiOls3NSw4NSwxNDQsODYsODhdfQ==.xlw0EUIjWrp2vTkqKHe1eh4ofmsgInlgayPeQ91swoWjDcVqdGaaWcXgSoutdu2e5GIMQtrA_clhC8aBwvoVBw==/live/c3eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd">Opción 6</button>
   </div>
   <div class="sandbox-control-container">
     <input type="checkbox" id="sandbox-toggle" checked>
-    <label for="sandbox-toggle">Activar Sandbox (recomendado)</label>
+    <label for="sandbox-toggle">Activar Sandbox</label>
   </div>
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
     const playerIframe = document.getElementById('video-player');
-    const sandboxToggle = document.getElementById('sandbox-toggle'); // Casilla para el sandbox
+    const mpdPlayerElement = document.getElementById('mpd-video-player'); // MPD video element
+    const sandboxToggle = document.getElementById('sandbox-toggle');
     const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
+    let dashPlayer = null; // Variable para la instancia de Dash.js
 
-    // Función para aplicar/quitar el atributo sandbox
+    // Función para aplicar/quitar el atributo sandbox al iframe
     function applySandboxState() {
-      if (sandboxToggle.checked) {
-        playerIframe.setAttribute('sandbox', defaultSandboxPermissions);
-      } else {
-        playerIframe.removeAttribute('sandbox');
+      // Solo aplicar si el iframe está visible
+      if (!playerIframe.classList.contains('hidden')) {
+        if (sandboxToggle.checked) {
+          playerIframe.setAttribute('sandbox', defaultSandboxPermissions);
+        } else {
+          playerIframe.removeAttribute('sandbox');
+        }
       }
     }
 
@@ -319,14 +333,15 @@
     });
 
     fullscreenButton.addEventListener('click', () => {
-      if (playerIframe.requestFullscreen) {
-        playerIframe.requestFullscreen();
-      } else if (playerIframe.mozRequestFullScreen) { /* Firefox */
-        playerIframe.mozRequestFullScreen();
-      } else if (playerIframe.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-        playerIframe.webkitRequestFullscreen();
-      } else if (playerIframe.msRequestFullscreen) { /* IE/Edge */
-        playerIframe.msRequestFullscreen();
+      const activePlayer = !playerIframe.classList.contains('hidden') ? playerIframe : mpdPlayerElement;
+      if (activePlayer.requestFullscreen) {
+        activePlayer.requestFullscreen();
+      } else if (activePlayer.mozRequestFullScreen) { /* Firefox */
+        activePlayer.mozRequestFullScreen();
+      } else if (activePlayer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        activePlayer.webkitRequestFullscreen();
+      } else if (activePlayer.msRequestFullscreen) { /* IE/Edge */
+        activePlayer.msRequestFullscreen();
       }
     });
 
@@ -334,10 +349,42 @@
     const optionButtons = document.querySelectorAll('.option-button');
     optionButtons.forEach(button => {
       button.addEventListener('click', () => {
-        const newSrc = button.getAttribute('data-url');
-        if (newSrc) {
-          playerIframe.src = newSrc;
-          setTimeout(applySandboxState, 0);
+        const iframeSrc = button.getAttribute('data-url');
+        const mpdSrc = button.getAttribute('data-mpd-url');
+
+        // Destruir instancia de Dash.js si existe
+        if (dashPlayer) {
+          dashPlayer.destroy(); // Usar destroy() para una limpieza completa
+          dashPlayer = null;
+        }
+
+        if (iframeSrc) {
+          // Es una fuente para el iframe
+          mpdPlayerElement.classList.add('hidden'); // Ocultar MPD player
+          mpdPlayerElement.pause(); // Pausar video MPD si estaba reproduciendo
+          mpdPlayerElement.src = ""; // Limpiar src para detener la carga
+
+          playerIframe.classList.remove('hidden'); // Mostrar iframe
+          playerIframe.src = iframeSrc;
+          setTimeout(applySandboxState, 0); // Aplicar estado del sandbox
+
+        } else if (mpdSrc) {
+          // Es una fuente para el reproductor MPD
+          playerIframe.classList.add('hidden'); // Ocultar iframe
+          playerIframe.src = "about:blank"; // Detener carga del iframe
+
+          mpdPlayerElement.classList.remove('hidden'); // Mostrar MPD player
+          
+          dashPlayer = dashjs.MediaPlayer().create();
+          dashPlayer.initialize(mpdPlayerElement, mpdSrc, true); // true para autoplay
+          // Opcional: configuraciones adicionales para Dash.js
+          dashPlayer.updateSettings({
+            'streaming': {
+              'abr': {
+                'autoSwitchBitrate': { 'video': true, 'audio': true } 
+              }
+            }
+          });
         }
       });
     });
