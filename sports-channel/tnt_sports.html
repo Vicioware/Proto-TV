@@ -171,6 +171,27 @@
     .fullscreen-button:hover {
         background-color: rgba(255, 255, 255, 0.1);
     }
+    .sandbox-control-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        color: white;
+        font-family: 'DMSans', sans-serif;
+    }
+
+    .sandbox-control-container input[type="checkbox"] {
+        margin-right: 8px;
+        width: 16px; /* Tamaño personalizado */
+        height: 16px; /* Tamaño personalizado */
+        cursor: pointer;
+        accent-color: #007bff; /* Color del check cuando está marcado, opcional */
+    }
+
+    .sandbox-control-container label {
+        cursor: pointer;
+        font-size: 0.95em;
+    }
     /* --- Media Queries para Responsividad --- */
     @media (max-width: 900px) {
         .player-container {
@@ -192,6 +213,13 @@
         .option-button {
             font-size: 0.9em;
             padding: 8px 12px;
+        }
+        /* Ajuste para el control del sandbox en móviles */
+        .sandbox-control-container {
+            margin-top: 12px; /* Menos espacio en móviles */
+        }
+        .sandbox-control-container label {
+            font-size: 0.9em;
         }
          .fullscreen-button {
             top: 75px;
@@ -266,9 +294,29 @@
     <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed.php">Opción 3</button>
     <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed3.php">Opción 4</button>
   </div>
+  <div class="sandbox-control-container">
+    <input type="checkbox" id="sandbox-toggle" checked>
+    <label for="sandbox-toggle">Activar Sandbox (recomendado)</label>
+  </div>
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
     const playerIframe = document.getElementById('video-player');
+    const sandboxToggle = document.getElementById('sandbox-toggle'); // Casilla para el sandbox
+    const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
+
+    // Función para aplicar/quitar el atributo sandbox
+    function applySandboxState() {
+      if (sandboxToggle.checked) {
+        playerIframe.setAttribute('sandbox', defaultSandboxPermissions);
+      } else {
+        playerIframe.removeAttribute('sandbox');
+      }
+    }
+
+    // Event listener para el cambio en la casilla del sandbox
+    sandboxToggle.addEventListener('change', () => {
+      applySandboxState();
+    });
 
     fullscreenButton.addEventListener('click', () => {
       if (playerIframe.requestFullscreen) {
@@ -289,6 +337,7 @@
         const newSrc = button.getAttribute('data-url');
         if (newSrc) {
           playerIframe.src = newSrc;
+          setTimeout(applySandboxState, 0);
         }
       });
     });
