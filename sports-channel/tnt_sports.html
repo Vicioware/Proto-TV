@@ -119,6 +119,40 @@
         height: 100%;
         border: none;
     }
+    .options-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Espacio entre botones */
+        margin-top: 20px; /* Espacio sobre los botones */
+        flex-wrap: wrap; /* Para que los botones se ajusten en pantallas pequeñas */
+        padding-bottom: 20px; /* Espacio debajo de los botones */
+    }
+
+    .option-button {
+        background-color: #007bff; /* Azul primario de Bootstrap como ejemplo */
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 1em;
+        font-family: 'DMSans', sans-serif;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .option-button:hover {
+        background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+        transform: translateY(-1px);
+    }
+
+    .option-button:active {
+        transform: translateY(0px);
+        background-color: #004085;
+    }
     .fullscreen-button {
         position: absolute;
         top: 80px;
@@ -150,7 +184,15 @@
          .channel-title-text {
             font-size: 38px; /* Reducir tamaño en pantallas medianas */
             margin: -5px auto 20px auto;
-         }
+        }
+         .options-container {
+            margin-top: 15px;
+            gap: 8px;
+        }
+        .option-button {
+            font-size: 0.9em;
+            padding: 8px 12px;
+        }
          .fullscreen-button {
             top: 75px;
             right: 20px;
@@ -218,6 +260,12 @@
       sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> <!-- Sandbox añadido por consistencia/seguridad -->
     </iframe>
   </div>
+  <div class="options-container">
+    <button class="option-button" data-url="https://elcanaldeportivo.com/tntsports.php">Opción 1</button>
+    <button class="option-button" data-url="https://rereyano.ru/player/3/75">Opción 2</button>
+    <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed.php">Opción 3</button>
+    <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed3.php">Opción 4</button>
+  </div>
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
     const playerIframe = document.getElementById('video-player');
@@ -232,6 +280,17 @@
       } else if (playerIframe.msRequestFullscreen) { /* IE/Edge */
         playerIframe.msRequestFullscreen();
       }
+    });
+
+    // Lógica para los botones de opciones de streaming
+    const optionButtons = document.querySelectorAll('.option-button');
+    optionButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const newSrc = button.getAttribute('data-url');
+        if (newSrc) {
+          playerIframe.src = newSrc;
+        }
+      });
     });
 
     document.addEventListener('fullscreenchange', () => {
