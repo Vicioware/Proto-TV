@@ -287,11 +287,6 @@
     </iframe>
   </div>
   <div class="options-container">
-    <button class="option-button" data-url="https://elcanaldeportivo.com/tntsports.php">Opción 1</button>
-    <button class="option-button" data-url="https://rereyano.ru/player/3/75">Opción 2</button>
-    <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed.php">Opción 3</button>
-    <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed3.php">Opción 4</button>
-    <button class="option-button" data-url="https://tvlibreonline.me/html/fl/?get=VE5UX1Nwb3J0c19IRA">Opción 5</button>
   </div>
   <div class="sandbox-control-container">
     <input type="checkbox" id="sandbox-toggle" checked>
@@ -300,10 +295,20 @@
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
     const playerIframe = document.getElementById('video-player');
-    const mpdPlayerElement = document.getElementById('mpd-video-player'); // MPD video element
     const sandboxToggle = document.getElementById('sandbox-toggle');
     const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
 
+    // --- Definición de las fuentes de streaming ---
+    const streamSources = [
+      { displayText: "Opción 1", sourceUrl: "https://elcanaldeportivo.com/tntsports.php" },
+      { displayText: "Opción 2", sourceUrl: "https://rereyano.ru/player/3/75" },
+      { displayText: "Opción 3", sourceUrl: "https://latele-envivo.com/en-vivo-online/tnt-sports/embed.php" },
+      { displayText: "Opción 4", sourceUrl: "https://latele-envivo.com/en-vivo-online/tnt-sports/embed3.php" },
+      { displayText: "Opción 5", sourceUrl: "https://tvlibreonline.me/html/fl/?get=VE5UX1Nwb3J0c19IRA" }
+      // Puedes añadir más opciones aquí fácilmente:
+      // { displayText: "Opción X", sourceUrl: "https://nueva.url/stream" }
+    ];
+    
     // Función para aplicar/quitar el atributo sandbox al iframe
     function applySandboxState() {
       // Solo aplicar si el iframe está visible
@@ -334,26 +339,30 @@
       }
     });
 
-    // Lógica para los botones de opciones de streaming
-    const optionButtons = document.querySelectorAll('.option-button');
-    optionButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const iframeSrc = button.getAttribute('data-url');
-        // Se eliminó const mpdSrc
+    // --- Función para renderizar los botones de opciones de streaming ---
+    function renderStreamOptions() {
+      optionsContainer.innerHTML = ''; // Limpiar botones existentes
 
-        // Se eliminó la lógica de destrucción de dashPlayer
+      streamSources.forEach(source => {
+        const button = document.createElement('button');
+        button.className = 'option-button';
+        button.textContent = source.displayText;
+        button.setAttribute('data-url', source.sourceUrl);
 
-        if (iframeSrc) {
-          // Se eliminó la lógica para ocultar mpdPlayerElement
-          
-          playerIframe.classList.remove('hidden'); // Asegurarse que el iframe esté visible
-          playerIframe.src = iframeSrc;
-          setTimeout(applySandboxState, 0); 
-
-        } 
-        // Se eliminó el bloque else if (mpdSrc)
+        button.addEventListener('click', () => {
+          const iframeSrc = button.getAttribute('data-url');
+          if (iframeSrc) {
+            playerIframe.classList.remove('hidden'); // Asegurarse que el iframe esté visible
+            playerIframe.src = iframeSrc;
+            setTimeout(applySandboxState, 0); 
+          }
+        });
+        optionsContainer.appendChild(button);
       });
-    });
+    }
+
+    // Llama a la función para renderizar los botones al cargar la página
+    renderStreamOptions();
 
     document.addEventListener('fullscreenchange', () => {
         // Opcional: Actualizar el texto del botón
