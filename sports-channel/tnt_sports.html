@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TNT Sports</title>
   <link rel="icon" href="../img/icon.png" type="image/png">
-  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
   <style>
     @font-face {
       font-family: 'CalSans';
@@ -112,8 +111,7 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         z-index: 0;
     }
-    .player-container iframe,
-    .player-container video { /* Aplicar estilos también al tag video */
+    .player-container iframe { /* Aplicar estilos también al tag video */
         position: absolute;
         top: 0;
         left: 0;
@@ -121,7 +119,6 @@
         height: 100%;
         border: none;
     }
-
     .hidden {
         display: none !important;
     }
@@ -133,7 +130,6 @@
         flex-wrap: wrap; /* Para que los botones se ajusten en pantallas pequeñas */
         padding-bottom: 20px; /* Espacio debajo de los botones */
     }
-
     .option-button {
         background-color: #007bff; /* Azul primario de Bootstrap como ejemplo */
         border: none;
@@ -149,12 +145,10 @@
         transition: background-color 0.2s ease, transform 0.1s ease;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-
     .option-button:hover {
         background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
         transform: translateY(-1px);
     }
-
     .option-button:active {
         transform: translateY(0px);
         background-color: #004085;
@@ -185,7 +179,6 @@
         color: white;
         font-family: 'DMSans', sans-serif;
     }
-
     .sandbox-control-container input[type="checkbox"] {
         margin-right: 8px;
         width: 16px; /* Tamaño personalizado */
@@ -193,7 +186,6 @@
         cursor: pointer;
         accent-color: #007bff; /* Color del check cuando está marcado, opcional */
     }
-
     .sandbox-control-container label {
         cursor: pointer;
         font-size: 0.95em;
@@ -293,7 +285,6 @@
       frameborder="0"
       sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media"> <!-- Sandbox añadido por consistencia/seguridad -->
     </iframe>
-    <video id="mpd-video-player" class="hidden" controls autoplay></video>
   </div>
   <div class="options-container">
     <button class="option-button" data-url="https://elcanaldeportivo.com/tntsports.php">Opción 1</button>
@@ -301,7 +292,6 @@
     <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed.php">Opción 3</button>
     <button class="option-button" data-url="https://latele-envivo.com/en-vivo-online/tnt-sports/embed3.php">Opción 4</button>
     <button class="option-button" data-url="https://tvlibreonline.me/html/fl/?get=VE5UX1Nwb3J0c19IRA">Opción 5</button>
-    <button class="option-button" data-url="https://edge-mix01-mus.cvattv.com.ar/tok_eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxNzQ3MjYyMzY5Iiwic2lwIjoiMzguNTIuMjE3LjIxNyIsInBhdGgiOiIvbGl2ZS9jNmVkcy9UTlRfU3BvcnRzX0hEL1NBX0xpdmVfZGFzaF9lbmMvIiwic2Vzc2lvbl9jZG5faWQiOiJiYjAxMTE3NGQ4M2Y1ZmZlIiwic2Vzc2lvbl9pZCI6IiIsImNsaWVudF9pZCI6IiIsImRldmljZV9pZCI6IiIsIm1heF9zZXNzaW9ucyI6MCwic2Vzc2lvbl9kdXJhdGlvbiI6MCwidXJsIjoiaHR0cHM6Ly8yMDEuMjM1LjY2LjExNSIsImF1ZCI6IjEzNiIsInNvdXJjZXMiOls3NSw4NSwxNDQsODYsODhdfQ==.xlw0EUIjWrp2vTkqKHe1eh4ofmsgInlgayPeQ91swoWjDcVqdGaaWcXgSoutdu2e5GIMQtrA_clhC8aBwvoVBw==/live/c3eds/TNT_Sports_HD/SA_Live_dash_enc/TNT_Sports_HD.mpd">Opción 6</button>
   </div>
   <div class="sandbox-control-container">
     <input type="checkbox" id="sandbox-toggle" checked>
@@ -313,7 +303,6 @@
     const mpdPlayerElement = document.getElementById('mpd-video-player'); // MPD video element
     const sandboxToggle = document.getElementById('sandbox-toggle');
     const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
-    let dashPlayer = null; // Variable para la instancia de Dash.js
 
     // Función para aplicar/quitar el atributo sandbox al iframe
     function applySandboxState() {
@@ -333,15 +322,15 @@
     });
 
     fullscreenButton.addEventListener('click', () => {
-      const activePlayer = !playerIframe.classList.contains('hidden') ? playerIframe : mpdPlayerElement;
-      if (activePlayer.requestFullscreen) {
-        activePlayer.requestFullscreen();
-      } else if (activePlayer.mozRequestFullScreen) { /* Firefox */
-        activePlayer.mozRequestFullScreen();
-      } else if (activePlayer.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-        activePlayer.webkitRequestFullscreen();
-      } else if (activePlayer.msRequestFullscreen) { /* IE/Edge */
-        activePlayer.msRequestFullscreen();
+      // Simplificado para apuntar solo al iframe
+      if (playerIframe.requestFullscreen) {
+        playerIframe.requestFullscreen();
+      } else if (playerIframe.mozRequestFullScreen) { /* Firefox */
+        playerIframe.mozRequestFullScreen();
+      } else if (playerIframe.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        playerIframe.webkitRequestFullscreen();
+      } else if (playerIframe.msRequestFullscreen) { /* IE/Edge */
+        playerIframe.msRequestFullscreen();
       }
     });
 
@@ -350,42 +339,19 @@
     optionButtons.forEach(button => {
       button.addEventListener('click', () => {
         const iframeSrc = button.getAttribute('data-url');
-        const mpdSrc = button.getAttribute('data-mpd-url');
+        // Se eliminó const mpdSrc
 
-        // Destruir instancia de Dash.js si existe
-        if (dashPlayer) {
-          dashPlayer.destroy(); // Usar destroy() para una limpieza completa
-          dashPlayer = null;
-        }
+        // Se eliminó la lógica de destrucción de dashPlayer
 
         if (iframeSrc) {
-          // Es una fuente para el iframe
-          mpdPlayerElement.classList.add('hidden'); // Ocultar MPD player
-          mpdPlayerElement.pause(); // Pausar video MPD si estaba reproduciendo
-          mpdPlayerElement.src = ""; // Limpiar src para detener la carga
-
-          playerIframe.classList.remove('hidden'); // Mostrar iframe
-          playerIframe.src = iframeSrc;
-          setTimeout(applySandboxState, 0); // Aplicar estado del sandbox
-
-        } else if (mpdSrc) {
-          // Es una fuente para el reproductor MPD
-          playerIframe.classList.add('hidden'); // Ocultar iframe
-          playerIframe.src = "about:blank"; // Detener carga del iframe
-
-          mpdPlayerElement.classList.remove('hidden'); // Mostrar MPD player
+          // Se eliminó la lógica para ocultar mpdPlayerElement
           
-          dashPlayer = dashjs.MediaPlayer().create();
-          dashPlayer.initialize(mpdPlayerElement, mpdSrc, true); // true para autoplay
-          // Opcional: configuraciones adicionales para Dash.js
-          dashPlayer.updateSettings({
-            'streaming': {
-              'abr': {
-                'autoSwitchBitrate': { 'video': true, 'audio': true } 
-              }
-            }
-          });
-        }
+          playerIframe.classList.remove('hidden'); // Asegurarse que el iframe esté visible
+          playerIframe.src = iframeSrc;
+          setTimeout(applySandboxState, 0); 
+
+        } 
+        // Se eliminó el bloque else if (mpdSrc)
       });
     });
 
