@@ -297,6 +297,7 @@
     const playerIframe = document.getElementById('video-player');
     const sandboxToggle = document.getElementById('sandbox-toggle');
     const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
+    const optionsContainer = document.querySelector('.options-container'); // <-- Línea añadida/corregida
 
     // --- Definición de las fuentes de streaming ---
     const streamSources = [
@@ -341,6 +342,10 @@
 
     // --- Función para renderizar los botones de opciones de streaming ---
     function renderStreamOptions() {
+      if (!optionsContainer) { // Verificación adicional por si acaso
+        console.error("Error: El contenedor de opciones no se encontró.");
+        return;
+      }
       optionsContainer.innerHTML = ''; // Limpiar botones existentes
 
       streamSources.forEach(source => {
