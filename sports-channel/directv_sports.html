@@ -136,6 +136,60 @@
     .fullscreen-button:hover {
         background-color: rgba(255, 255, 255, 0.1);
     }
+    /* --- Estilos para Opciones y Sandbox (Adaptado de fox_sports.html/espn.html) --- */
+    .hidden {
+        display: none !important;
+    }
+    .options-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px; /* Espacio entre botones */
+        margin-top: 20px; /* Espacio sobre los botones */
+        flex-wrap: wrap; /* Para que los botones se ajusten en pantallas pequeñas */
+        padding-bottom: 20px; /* Espacio debajo de los botones */
+    }
+    .option-button {
+        background-color: #007bff; /* Azul primario de Bootstrap como ejemplo */
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 1em;
+        font-family: 'DMSans', sans-serif;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .option-button:hover {
+        background-color: #0056b3; /* Azul más oscuro al pasar el ratón */
+        transform: translateY(-1px);
+    }
+    .option-button:active {
+        transform: translateY(0px);
+        background-color: #004085;
+    }
+    .sandbox-control-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+        color: white;
+        font-family: 'DMSans', sans-serif;
+    }
+    .sandbox-control-container input[type="checkbox"] {
+        margin-right: 8px;
+        width: 16px; /* Tamaño personalizado */
+        height: 16px; /* Tamaño personalizado */
+        cursor: pointer;
+        accent-color: #007bff; /* Color del check cuando está marcado, opcional */
+    }
+    .sandbox-control-container label {
+        cursor: pointer;
+        font-size: 0.95em;
+    }
     /* --- Media Queries para Responsividad --- */
     @media (max-width: 900px) {
         .player-container {
@@ -185,12 +239,26 @@
             max-width: 100%; /* Ocupa todo el ancho */
             border-radius: 4px; /* Menos redondeo */
         }
+        .options-container {
+            margin-top: 15px;
+            gap: 8px;
+        }
+        .option-button {
+            font-size: 0.9em;
+            padding: 8px 12px;
+        }
+        .sandbox-control-container {
+            margin-top: 12px; /* Menos espacio en móviles */
+        }
         .fullscreen-button {
             top: 70px;
             right: 15px;
             font-size: 1.05em;
             padding: 4px 8px;
         }
+    }
+    @media (max-width: 700px) .sandbox-control-container label { /* Asegurar que el label también se ajuste */
+        font-size: 0.9em;
     }
   </style>
 </head>
@@ -218,9 +286,62 @@
       sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media">
     </iframe>
   </div>
+
+  <!-- Contenedor para botones de opciones de streaming -->
+  <div class="options-container">
+  </div>
+
+  <!-- Control para activar/desactivar sandbox -->
+  <div class="sandbox-control-container">
+    <input type="checkbox" id="sandbox-toggle" checked>
+    <label for="sandbox-toggle">Activar Sandbox</label>
+  </div>
+
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
     const playerIframe = document.getElementById('video-player');
+    const sandboxToggle = document.getElementById('sandbox-toggle');
+    const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
+    const optionsContainer = document.querySelector('.options-container');
+
+    // --- Definición de las fuentes de streaming para DirecTV Sports ---
+    const streamSources = [
+      { displayText: "Opción 1", sourceUrl: "https://elcanaldeportivo.com/directvsports.php" },
+      { displayText: "Opción 2", sourceUrl: "https://rereyano.ru/player/3/80" }, // Ejemplo, ajustar URL
+      { displayText: "Opción 3", sourceUrl: "https://tvlibreonline.me/html/fl/?get=RFNWX0hE" }, // Ejemplo, ajustar URL
+      // Puedes añadir más opciones aquí fácilmente:
+      // { displayText: "Opción X", sourceUrl: "https://nueva.url/stream_directv" }
+    ];
+
+    // Función para aplicar/quitar el atributo sandbox al iframe
+    function applySandboxState() {
+      if (!playerIframe.classList.contains('hidden')) { // Asumimos que el iframe podría ocultarse, aunque no está implementado aquí
+        if (sandboxToggle.checked) {
+          playerIframe.setAttribute('sandbox', defaultSandboxPermissions);
+        } else {
+          playerIframe.removeAttribute('sandbox');
+        }
+      }
+    }
+
+    // Event listener para el cambio en la casilla del sandbox
+    sandboxToggle.addEventListener('change', applySandboxState);
+
+    // --- Función para renderizar los botones de opciones de streaming ---
+    function renderStreamOptions() {
+      optionsContainer.innerHTML = ''; // Limpiar botones existentes
+      streamSources.forEach(source => {
+        const button = document.createElement('button');
+        button.className = 'option-button';
+        button.textContent = source.displayText;
+        button.setAttribute('data-url', source.sourceUrl);
+        button.addEventListener('click', () => {
+          playerIframe.src = source.sourceUrl;
+          setTimeout(applySandboxState, 0); // Aplicar sandbox después de cambiar la fuente
+        });
+        optionsContainer.appendChild(button);
+      });
+    }
 
     fullscreenButton.addEventListener('click', () => {
       if (playerIframe.requestFullscreen) {
@@ -233,6 +354,9 @@
         playerIframe.msRequestFullscreen();
       }
     });
+
+    // Renderizar botones de opciones al cargar la página
+    renderStreamOptions();
 
     document.addEventListener('fullscreenchange', () => {
         // Opcional: Actualizar el texto del botón
