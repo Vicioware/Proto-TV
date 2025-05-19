@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DirecTV Sports</title>
   <link rel="icon" href="../img/icon.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     @font-face {
       font-family: 'CalSans';
@@ -118,6 +119,16 @@
         height: 100%;
         border: none;
     }
+    .player-container video { /* Style for the HLS.js video player */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        background-color: #000; /* Background while loading/if no content */
+    }
+
     .fullscreen-button {
         position: absolute;
         top: 80px;
@@ -278,13 +289,14 @@
   <!-- Contenedor del reproductor -->
   <div class="player-container">
     <iframe
-      id="video-player"
+      id="video-player-iframe"
       src="https://elcanaldeportivo.com/directvsports.php"
       allowfullscreen
       allow="encrypted-media"
       frameborder="0"
       sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media">
     </iframe>
+    <video id="video-player-hls" class="hidden" controls autoplay></video>
   </div>
 
   <!-- Contenedor para botones de opciones de streaming -->
@@ -299,10 +311,13 @@
 
   <script>
     const fullscreenButton = document.getElementById('fullscreen-btn');
-    const playerIframe = document.getElementById('video-player');
+    const iframePlayer = document.getElementById('video-player-iframe');
+    const hlsPlayerVideoElement = document.getElementById('video-player-hls');
     const sandboxToggle = document.getElementById('sandbox-toggle');
     const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
     const optionsContainer = document.querySelector('.options-container');
+    let hls = null; // HLS.js instance
+    let activePlayerElement = iframePlayer; // Keep track of the active player element
 
     // --- Definición de las fuentes de streaming para DirecTV Sports ---
     const streamSources = [
@@ -310,17 +325,19 @@
       { displayText: "Opción 2", sourceUrl: "https://rereyano.ru/player/3/94" }, // Ejemplo, ajustar URL
       { displayText: "Opción 3", sourceUrl: "https://latele-envivo.com/en-vivo-online/dsports/embed2.php" }, // Ejemplo, ajustar URL
       { displayText: "Opción 4", sourceUrl: "https://latele-envivo.com/en-vivo-online/dsports/embed3.php" },
+      { displayText: "Opción 5", sourceUrl: "https://agl2zq.fubohd.com/dsports/mono.m3u8?token=16868ecab77b2119bf5f4e280b7f8049aea41065-c2-1747671897-1747653897" },
+      { displayText: "Opción 6", sourceUrl: "https://latele-envivo.com/en-vivo-online/dsports/embed3.php" },
       // Puedes añadir más opciones aquí fácilmente:
       // { displayText: "Opción X", sourceUrl: "https://nueva.url/stream_directv" }
     ];
 
     // Función para aplicar/quitar el atributo sandbox al iframe
     function applySandboxState() {
-      if (!playerIframe.classList.contains('hidden')) { // Asumimos que el iframe podría ocultarse, aunque no está implementado aquí
+      if (!iframePlayer.classList.contains('hidden')) {
         if (sandboxToggle.checked) {
-          playerIframe.setAttribute('sandbox', defaultSandboxPermissions);
+          iframePlayer.setAttribute('sandbox', defaultSandboxPermissions);
         } else {
-          playerIframe.removeAttribute('sandbox');
+          iframePlayer.removeAttribute('sandbox');
         }
       }
     }
@@ -337,27 +354,99 @@
         button.textContent = source.displayText;
         button.setAttribute('data-url', source.sourceUrl);
         button.addEventListener('click', () => {
-          playerIframe.src = source.sourceUrl;
-          setTimeout(applySandboxState, 0); // Aplicar sandbox después de cambiar la fuente
+          const sourceUrl = source.sourceUrl;
+
+          if (sourceUrl.includes('.m3u8')) {
+            // Es un stream M3U8, usar HLS.js
+            iframePlayer.classList.add('hidden');
+            iframePlayer.src = 'about:blank'; // Detener carga del iframe
+            hlsPlayerVideoElement.classList.remove('hidden');
+            activePlayerElement = hlsPlayerVideoElement;
+
+            if (Hls.isSupported()) {
+              if (hls) {
+                hls.destroy();
+              }
+              hls = new Hls({
+                // Configuraciones opcionales de HLS.js
+                // Por ejemplo, para intentar recuperar errores de red/media:
+                // abrMaxBitrate: -1, // auto
+                // capLevelToPlayerSize: true,
+                // maxBufferLength: 30,
+                // maxMaxBufferLength: 600,
+              });
+              hls.loadSource(sourceUrl);
+              hls.attachMedia(hlsPlayerVideoElement);
+              hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                hlsPlayerVideoElement.play().catch(e => console.warn("HLS Autoplay fue prevenido:", e));
+              });
+              hls.on(Hls.Events.ERROR, function (event, data) {
+                console.error('Error en HLS.js:', data);
+                if (data.fatal) {
+                  switch(data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                      console.error("Error de red fatal en HLS, intentando recuperar...");
+                      // hls.startLoad(); // Intenta reiniciar la carga
+                      break;
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                      console.error("Error de media fatal en HLS, intentando recuperar...");
+                      // hls.recoverMediaError();
+                      break;
+                    default:
+                      // No se puede recuperar
+                      // hls.destroy(); // Destruir instancia si no se puede recuperar
+                      break;
+                  }
+                }
+              });
+            } else if (hlsPlayerVideoElement.canPlayType('application/vnd.apple.mpegurl')) {
+              // Soporte nativo de HLS (ej. Safari)
+              hlsPlayerVideoElement.src = sourceUrl;
+              hlsPlayerVideoElement.addEventListener('loadedmetadata', function() {
+                hlsPlayerVideoElement.play().catch(e => console.warn("Autoplay nativo de HLS fue prevenido:", e));
+              });
+            } else {
+              console.error("HLS no es soportado en este navegador.");
+              // Aquí podrías mostrar un mensaje al usuario
+            }
+          } else {
+            // Es un stream normal, usar iframe
+            hlsPlayerVideoElement.classList.add('hidden');
+            if (hls) {
+              hls.destroy(); // Detener HLS si estaba activo
+              hls = null;
+            }
+            hlsPlayerVideoElement.src = ''; // Limpiar fuente del video
+
+            iframePlayer.classList.remove('hidden');
+            iframePlayer.src = sourceUrl;
+            activePlayerElement = iframePlayer;
+            setTimeout(applySandboxState, 0); // Aplicar sandbox después de cambiar la fuente del iframe
+          }
         });
         optionsContainer.appendChild(button);
       });
     }
 
     fullscreenButton.addEventListener('click', () => {
-      if (playerIframe.requestFullscreen) {
-        playerIframe.requestFullscreen();
-      } else if (playerIframe.mozRequestFullScreen) { /* Firefox */
-        playerIframe.mozRequestFullScreen();
-      } else if (playerIframe.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
-        playerIframe.webkitRequestFullscreen();
-      } else if (playerIframe.msRequestFullscreen) { /* IE/Edge */
-        playerIframe.msRequestFullscreen();
+      if (activePlayerElement.requestFullscreen) {
+        activePlayerElement.requestFullscreen();
+      } else if (activePlayerElement.mozRequestFullScreen) { /* Firefox */
+        activePlayerElement.mozRequestFullScreen();
+      } else if (activePlayerElement.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        activePlayerElement.webkitRequestFullscreen();
+      } else if (activePlayerElement.msRequestFullscreen) { /* IE/Edge */
+        activePlayerElement.msRequestFullscreen();
       }
     });
 
     // Renderizar botones de opciones al cargar la página
     renderStreamOptions();
+
+    // Asegurar que el estado inicial del sandbox se aplique si el iframe es el reproductor activo
+    if (activePlayerElement === iframePlayer) {
+        applySandboxState();
+    }
 
     document.addEventListener('fullscreenchange', () => {
         // Opcional: Actualizar el texto del botón
