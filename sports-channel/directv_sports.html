@@ -316,6 +316,7 @@
     const sandboxToggle = document.getElementById('sandbox-toggle');
     const defaultSandboxPermissions = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-encrypted-media";
     const optionsContainer = document.querySelector('.options-container');
+    const playerContainer = document.querySelector('.player-container'); // Contenedor de los reproductores
     let hls = null; // HLS.js instance
     let activePlayerElement = iframePlayer; // Keep track of the active player element
 
@@ -331,19 +332,48 @@
       // { displayText: "Opción X", sourceUrl: "https://nueva.url/stream_directv" }
     ];
 
-    // Función para aplicar/quitar el atributo sandbox al iframe
-    function applySandboxState() {
-      if (!iframePlayer.classList.contains('hidden')) {
-        if (sandboxToggle.checked) {
-          iframePlayer.setAttribute('sandbox', defaultSandboxPermissions);
-        } else {
-          iframePlayer.removeAttribute('sandbox');
-        }
+    // Función para recrear el iframe con el estado de sandbox deseado
+    function recreateIframe(newSrc, applySandbox) {
+      // Ocultar y detener el reproductor HLS si estaba activo
+      hlsPlayerVideoElement.classList.add('hidden');
+      if (hls) {
+        hls.destroy();
+        hls = null;
       }
+      hlsPlayerVideoElement.src = '';
+
+      // Eliminar el iframe anterior si existe
+      if (iframePlayer && iframePlayer.parentNode === playerContainer) {
+        playerContainer.removeChild(iframePlayer);
+      }
+
+      // Crear el nuevo iframe
+      const newIframe = document.createElement('iframe');
+      newIframe.id = 'video-player-iframe'; // Mantener el mismo ID
+      newIframe.allowFullscreen = true;
+      newIframe.setAttribute('allow', 'encrypted-media');
+      newIframe.frameBorder = '0'; // frameBorder es la propiedad JS, frameborder el atributo HTML
+
+      if (applySandbox) {
+        newIframe.setAttribute('sandbox', defaultSandboxPermissions);
+      }
+      // Si applySandbox es false, el atributo sandbox simplemente no se añade.
+
+      newIframe.src = newSrc;
+
+      playerContainer.appendChild(newIframe);
+      iframePlayer = newIframe; // Actualizar la referencia global
+      activePlayerElement = iframePlayer;
+      iframePlayer.classList.remove('hidden'); // Asegurarse de que esté visible
     }
 
     // Event listener para el cambio en la casilla del sandbox
-    sandboxToggle.addEventListener('change', applySandboxState);
+    sandboxToggle.addEventListener('change', () => {
+      // Solo actuar si el iframe es el reproductor activo y tiene una URL cargada
+      if (activePlayerElement === iframePlayer && iframePlayer.src && iframePlayer.src !== 'about:blank') {
+        recreateIframe(iframePlayer.src, sandboxToggle.checked);
+      }
+    });
 
     // --- Función para renderizar los botones de opciones de streaming ---
     function renderStreamOptions() {
@@ -358,8 +388,12 @@
 
           if (sourceUrl.includes('.m3u8')) {
             // Es un stream M3U8, usar HLS.js
-            iframePlayer.classList.add('hidden');
-            iframePlayer.src = 'about:blank'; // Detener carga del iframe
+            // Ocultar y limpiar el iframe si existe
+            if (iframePlayer) {
+                iframePlayer.classList.add('hidden');
+                iframePlayer.src = 'about:blank';
+            }
+
             hlsPlayerVideoElement.classList.remove('hidden');
             activePlayerElement = hlsPlayerVideoElement;
 
@@ -411,17 +445,8 @@
             }
           } else {
             // Es un stream normal, usar iframe
-            hlsPlayerVideoElement.classList.add('hidden');
-            if (hls) {
-              hls.destroy(); // Detener HLS si estaba activo
-              hls = null;
-            }
-            hlsPlayerVideoElement.src = ''; // Limpiar fuente del video
-
-            iframePlayer.classList.remove('hidden');
-            iframePlayer.src = sourceUrl;
-            activePlayerElement = iframePlayer;
-            setTimeout(applySandboxState, 0); // Aplicar sandbox después de cambiar la fuente del iframe
+            // La función recreateIframe se encarga de ocultar HLS y mostrar el iframe
+            recreateIframe(sourceUrl, sandboxToggle.checked);
           }
         });
         optionsContainer.appendChild(button);
@@ -443,10 +468,8 @@
     // Renderizar botones de opciones al cargar la página
     renderStreamOptions();
 
-    // Asegurar que el estado inicial del sandbox se aplique si el iframe es el reproductor activo
-    if (activePlayerElement === iframePlayer) {
-        applySandboxState();
-    }
+    // El estado inicial del sandbox del iframe es manejado por el HTML.
+    // Si el checkbox está 'checked' por defecto, el iframe debe tener el atributo 'sandbox'.
 
     document.addEventListener('fullscreenchange', () => {
         // Opcional: Actualizar el texto del botón
