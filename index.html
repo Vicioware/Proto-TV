@@ -210,8 +210,21 @@
             currentCompetitionMatches = []; // Reiniciar para la nueva competición
 
             const td = row.querySelector('td');
-            if (td && td.textContent.toLowerCase().includes('argentina')) {
-              const a = td.querySelector('a');
+            let isArgentinianCompetition = false;
+            if (td) {
+                const competitionImg = td.querySelector('img.js-webp-default'); // Selector de la imagen de la competición
+                if (competitionImg) {
+                    const imgSrc = (competitionImg.getAttribute('src') || '').toLowerCase();
+                    const altImgSrc = (competitionImg.getAttribute('alt-img') || '').toLowerCase();
+                    // Verificamos si en el src o alt-img de la imagen aparece "-argentina." o "/argentina."
+                    if (imgSrc.includes('-argentina.') || imgSrc.includes('/argentina.') || altImgSrc.includes('-argentina.') || altImgSrc.includes('/argentina.')) {
+                        isArgentinianCompetition = true;
+                    }
+                }
+            }
+
+            if (isArgentinianCompetition) {
+              const a = td.querySelector('a.internalLink'); // Hacemos el selector del enlace un poco más específico
               currentCompetitionName = a ? a.textContent.trim() : 'Competición Argentina';
             } else {
               currentCompetitionName = null; // No es una competición argentina de interés
