@@ -164,7 +164,8 @@
       container.innerHTML = '<h2>Cargando agenda...</h2>'; 
 
       try {
-        const proxy = 'https://api.allorigins.win/raw?url='; // Usamos un proxy para evitar problemas de CORS
+        // const proxy = 'https://api.allorigins.win/raw?url='; // Proxy anterior
+        const proxy = 'https://corsproxy.io/?'; // Nuevo proxy alternativo
         const targetUrl = 'https://www.futbolenvivoargentina.com/';
 
         const response = await fetch(proxy + encodeURIComponent(targetUrl));
