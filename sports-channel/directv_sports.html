@@ -353,15 +353,19 @@
       newIframe.allowFullscreen = true;
       newIframe.setAttribute('allow', 'encrypted-media');
       newIframe.frameBorder = '0'; // frameBorder es la propiedad JS, frameborder el atributo HTML
+      
+      // 1. Añadir el iframe al DOM ANTES de establecer sandbox o src
+      playerContainer.appendChild(newIframe);
 
+      // 2. Establecer el atributo sandbox (o asegurarnos de que no esté)
       if (applySandbox) {
         newIframe.setAttribute('sandbox', defaultSandboxPermissions);
+      } else {
+        newIframe.removeAttribute('sandbox'); // Asegurarse de que no esté si applySandbox es false
       }
-      // Si applySandbox es false, el atributo sandbox simplemente no se añade.
 
+      // 3. Establecer la fuente (src)
       newIframe.src = newSrc;
-
-      playerContainer.appendChild(newIframe);
       iframePlayer = newIframe; // Actualizar la referencia global
       activePlayerElement = iframePlayer;
       iframePlayer.classList.remove('hidden'); // Asegurarse de que esté visible

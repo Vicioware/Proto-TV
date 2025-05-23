@@ -65,6 +65,11 @@
     #agenda-table { width: 100%; border-collapse: collapse; }
     #agenda-table th, #agenda-table td { border: 1px solid #ddd; padding: 8px; }
     #agenda-table th { background: #f5f5f5; }
+    /* Estilos para las nuevas tablas de agenda (una por competición) */
+    .styled-agenda-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    .styled-agenda-table th, .styled-agenda-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .styled-agenda-table th { background: #f5f5f5; }
+    .styled-agenda-table td:nth-child(2) { text-align: center; } /* Centrar Horario */
     @media (max-width: 700px) {
       body { padding: 20px 15px; padding-top: 90px; }
       .site-logo-link { position: absolute; top: 15px; left: 15px; } /* Ajustado para móvil */
@@ -159,167 +164,150 @@
       container.innerHTML = '<h2>Cargando agenda...</h2>'; 
 
       try {
-        const proxy = 'https://api.allorigins.win/raw?url=';
-        const targetUrls = [
-          'https://pelota-libre.org/agenda/',
-          'https://tvlibreonline.me/agenda/' 
-        ];
+        const proxy = 'https://api.allorigins.win/raw?url='; // Usamos un proxy para evitar problemas de CORS
+        const targetUrl = 'https://www.futbolenvivoargentina.com/';
 
-        // Fetch data from all sources concurrently
-        const responses = await Promise.all(
-          targetUrls.map(url => fetch(proxy + encodeURIComponent(url)))
-        );
-
-        // Process all responses
-        let allEntries = [];
-        let headerText = 'Agenda deportiva'; // Default header
-
-        for (const resp of responses) {
-          if (!resp.ok) {
-            console.warn(`Fallo al cargar desde: ${resp.url}`);
-            continue; // Saltar a la siguiente URL si una falla
-          }
-          const htmlText = await resp.text();
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(htmlText, 'text/html');
-
-          // Intentar obtener el encabezado (usar el primero que se encuentre)
-          const centerEl = doc.querySelector('center');
-          if (centerEl && headerText === 'Agenda deportiva') { // Tomar el primer encabezado válido
-             headerText = centerEl.textContent.trim();
-          }
-
-          // Extraer entradas de esta fuente
-          const entries = Array.from(doc.querySelectorAll('li.AR, li.CHA, li.SUD, li.LIB'));
-          allEntries = allEntries.concat(entries); // Añadir entradas a la lista combinada
+        const response = await fetch(proxy + encodeURIComponent(targetUrl));
+        if (!response.ok) {
+          throw new Error(`Error al cargar datos desde ${targetUrl}: ${response.statusText}`);
         }
-        
-        // Limpiar contenedor antes de añadir contenido nuevo (excepto si hubo error total)
+
+        const htmlText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, 'text/html');
+
+        const parsedData = {
+          pageTitle: 'Agenda Deportiva', // Título por defecto
+          competitions: []
+        };
+
+        let currentCompetitionMatches = null;
+        let currentCompetitionName = null;
+
+        const tbody = doc.querySelector('table tbody');
+        if (!tbody) {
+            throw new Error('No se encontró el tbody principal en la página fuente.');
+        }
+
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        for (const row of rows) {
+          if (row.classList.contains('cabeceraTabla')) {
+            const td = row.querySelector('td');
+            if (td) {
+                // Extraer el texto, eliminando el contenido de los spans si existen (como "AYER", "HOY", "MAÑANA")
+                const cloneTd = td.cloneNode(true);
+                cloneTd.querySelectorAll('span').forEach(span => span.remove());
+                parsedData.pageTitle = cloneTd.textContent.trim();
+            }
+          } else if (row.classList.contains('cabeceraCompericion')) {
+            if (currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
+              parsedData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
+            }
+            currentCompetitionMatches = []; // Reiniciar para la nueva competición
+
+            const td = row.querySelector('td');
+            if (td && td.textContent.toLowerCase().includes('argentina')) {
+              const a = td.querySelector('a');
+              currentCompetitionName = a ? a.textContent.trim() : 'Competición Argentina';
+            } else {
+              currentCompetitionName = null; // No es una competición argentina de interés
+            }
+          } else if (!row.className && currentCompetitionName && currentCompetitionMatches) { // Fila de partido y estamos en una competición argentina
+            const horaEl = row.querySelector('td.hora');
+            const localImgEl = row.querySelector('td.local img');
+            const visitanteImgEl = row.querySelector('td.visitante img');
+            const canalesUlEl = row.querySelector('td.canales ul');
+
+            if (horaEl && localImgEl && visitanteImgEl) {
+              const time = horaEl.textContent.trim();
+              const local = localImgEl.alt.trim();
+              const visitor = visitanteImgEl.alt.trim();
+              let channelsText = '-';
+              if (canalesUlEl) {
+                const channelItems = Array.from(canalesUlEl.querySelectorAll('li'))
+                                          .map(li => li.textContent.trim())
+                                          .filter(ch => ch); // Filtrar vacíos si los hubiera
+                if (channelItems.length > 0) {
+                  channelsText = channelItems.join(', ');
+                }
+              }
+              currentCompetitionMatches.push({ time, local, visitor, channels: channelsText });
+            }
+          }
+        }
+
+        // Añadir la última competición recolectada si existe
+        if (currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
+          parsedData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
+        }
+
+        // Renderizar los datos
         container.innerHTML = ''; 
 
-        const title = document.createElement('h2');
-        title.textContent = headerText;
-        container.appendChild(title);
+        const mainTitle = document.createElement('h2');
+        mainTitle.textContent = parsedData.pageTitle;
+        mainTitle.style.color = '#ef0a6a'; // Estilo del título principal de la agenda
+        mainTitle.style.textAlign = 'center';
+        container.appendChild(mainTitle);
 
-        // Eliminar duplicados basados en el texto del partido y hora (opcional pero recomendado)
-        const uniqueEntriesData = {};
-        const uniqueEntries = [];
-        allEntries.forEach(li => {
-            const mainA = li.querySelector('a:not([target])');
-            if (!mainA) return;
-            const spanTime = mainA.querySelector('span.t');
-            const timeText = spanTime ? spanTime.textContent.trim() : '';
-            let matchText = mainA.textContent.trim();
-            const parts = matchText.split(/\s+/);
-            if (!/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) parts.shift();
-            matchText = parts.join(' ').replace(/^Superliga Argentina:\s*/, '');
-            
-            const key = `${matchText}|${timeText}`; // Clave única por partido y hora
-            if (!uniqueEntriesData[key]) {
-                uniqueEntriesData[key] = true;
-                uniqueEntries.push(li); // Añadir solo si no existe la clave
-            }
-        });
-
-        // Comprobar si hay entradas únicas
-        if (uniqueEntries.length === 0) {
-          // Si no hay entradas, mostrar mensaje
-          const noDataDiv = document.createElement('p');
-          noDataDiv.textContent = 'No hay partidos para hoy';
-          noDataDiv.style.textAlign = 'center';
-          noDataDiv.style.padding = '20px 0';
-          container.appendChild(noDataDiv);
+        if (parsedData.competitions.length === 0) {
+          const noDataP = document.createElement('p');
+          noDataP.textContent = 'No hay partidos de ligas argentinas para hoy.';
+          noDataP.style.textAlign = 'center';
+          noDataP.style.padding = '20px 0';
+          container.appendChild(noDataP);
         } else {
-          // Si hay entradas, crear y llenar la tabla
-          const table = document.createElement('table');
-          table.id = 'agenda-table';
+          parsedData.competitions.forEach(competition => {
+            const competitionTitle = document.createElement('h3');
+            competitionTitle.textContent = competition.name; // "Categoría"
+            competitionTitle.style.color = '#333'; // Un color diferente para la categoría
+            competitionTitle.style.textAlign = 'center';
+            competitionTitle.style.marginTop = '25px';
+            competitionTitle.style.marginBottom = '10px';
+            container.appendChild(competitionTitle);
 
-          const thead = document.createElement('thead');
-          const headRow = document.createElement('tr');
-          ['Partido', 'Horario', 'Canales'].forEach(txt => {
-            const th = document.createElement('th'); th.textContent = txt; headRow.appendChild(th);
-          });
-          thead.appendChild(headRow);
-          table.appendChild(thead);
+            const table = document.createElement('table');
+            table.className = 'styled-agenda-table'; // Usar la nueva clase para estilos
 
-          const tbody = document.createElement('tbody');
-
-          uniqueEntries.forEach(li => { // Iterar sobre las entradas únicas
-            const mainA = li.querySelector('a:not([target])');
-            if (!mainA) return; 
-
-            // Extraer span de tiempo
-            const spanTime = mainA.querySelector('span.t');
-            const tdTime = document.createElement('td');
-            if (spanTime) {
-              // --- Inicio: Ajuste de Hora ---
-              const originalTime = spanTime.textContent.trim(); // Ej: "01:10"
-              const timeParts = originalTime.split(':');
-              if (timeParts.length === 2) {
-                let hour = parseInt(timeParts[0], 10);
-                const minute = parseInt(timeParts[1], 10);
-
-                if (!isNaN(hour) && !isNaN(minute)) {
-                  // Restar 4 horas y manejar el cruce de medianoche
-                  hour = (hour - 4 + 24) % 24; 
-
-                  // Formatear a HH:MM con ceros iniciales si es necesario
-                  const adjustedHourStr = hour.toString().padStart(2, '0');
-                  const minuteStr = minute.toString().padStart(2, '0');
-                  tdTime.textContent = `${adjustedHourStr}:${minuteStr}`;
-                } else {
-                  tdTime.textContent = originalTime; // Mostrar original si el parseo falla
-                }
-              } else {
-                tdTime.textContent = originalTime; // Mostrar original si el formato no es HH:MM
-              }
-              // --- Fin: Ajuste de Hora ---
-            } else {
-              tdTime.textContent = '';
-            }
-
-            // --- Inicio: Corrección Texto del Partido ---
-            // Clonar el nodo 'a' para manipularlo sin afectar el original para la hora
-            const linkClone = mainA.cloneNode(true);
-            const timeSpanInClone = linkClone.querySelector('span.t');
-            if (timeSpanInClone) {
-              timeSpanInClone.remove(); // Eliminar el span de tiempo del clon
-            }
-            let text = linkClone.textContent.trim(); // Obtener texto sin el horario
-            // --- Fin: Corrección Texto del Partido ---
-
-            const parts = text.split(/\s+/);
-            // Eliminar prefijos numéricos o de tiempo residuales si los hubiera
-            while (parts.length > 0 && !/^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(parts[0])) {
-                 parts.shift();
-            }
-            text = parts.join(' ').replace(/^Superliga Argentina:\s*/, ''); // Limpiar nombre de liga
-            const tdMatch = document.createElement('td');
-            tdMatch.textContent = text;
-
-            // Extraer canales (sin cambios)
-            const channelLinks = Array.from(li.querySelectorAll('ul > li.subitem1 > a'));
-            const channels = channelLinks.map(a => {
-              const sp = a.querySelector('span'); if (sp) sp.remove();
-              return a.textContent.trim();
+            const thead = document.createElement('thead');
+            const headRow = document.createElement('tr');
+            ['Partido', 'Horario', 'Canales'].forEach(txt => {
+              const th = document.createElement('th');
+              th.textContent = txt;
+              headRow.appendChild(th);
             });
-            const tdChan = document.createElement('td');
-            tdChan.textContent = channels.length ? channels.join(', ') : '-';
+            thead.appendChild(headRow);
+            table.appendChild(thead);
 
-            const tr = document.createElement('tr');
-            tr.append(tdMatch, tdTime, tdChan);
-            tbody.appendChild(tr);
+            const tbody = document.createElement('tbody');
+            competition.matches.forEach(match => {
+              const tr = document.createElement('tr');
+
+              const tdMatch = document.createElement('td');
+              tdMatch.textContent = `${match.local} vs ${match.visitor}`;
+
+              const tdTime = document.createElement('td');
+              tdTime.textContent = match.time;
+
+              const tdChan = document.createElement('td');
+              tdChan.textContent = match.channels;
+
+              tr.append(tdMatch, tdTime, tdChan);
+              tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            container.appendChild(table);
           });
-
-          table.appendChild(tbody);
-          container.appendChild(table);
         }
 
       } catch (err) {
         // Manejo de errores (si fallan todas las peticiones o hay otro error)
         container.innerHTML = ''; // Limpiar por si acaso
         const title = document.createElement('h2');
-        title.textContent = 'Agenda deportiva'; // Título genérico en caso de error
+        title.textContent = 'Agenda Deportiva'; // Título genérico en caso de error
+        title.style.color = '#ef0a6a';
+        title.style.textAlign = 'center';
         container.appendChild(title);
         const errorP = document.createElement('p');
         errorP.textContent = 'Error al cargar la agenda.';
