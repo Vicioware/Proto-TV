@@ -179,23 +179,34 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');
 
-        const parsedData = {
-          pageTitle: 'Agenda Deportiva', // Título por defecto
-          competitions: []
-        };
+        const parsedDaysData = []; // Array para almacenar los datos de cada día
 
-        let currentCompetitionMatches = null;
-        let currentCompetitionName = null;
+        // Seleccionar TODAS las tablas principales que contienen los datos de los días
+        const mainTables = doc.querySelectorAll('table.tablaPrincipal');
 
-        const tbody = doc.querySelector('table tbody');
-        if (!tbody) {
-            throw new Error('No se encontró el tbody principal en la página fuente.');
+        if (mainTables.length === 0) {
+            throw new Error('No se encontraron tablas principales en la página fuente.');
         }
 
-        const rows = Array.from(tbody.querySelectorAll('tr'));
+        for (const table of mainTables) { // Iterar sobre cada tabla (cada tabla representa un día)
+            const tbody = table.querySelector('tbody');
+            if (!tbody) continue; // Saltar si una tabla no tiene tbody
 
-        for (const row of rows) {
-          if (row.classList.contains('cabeceraTabla')) {
+            let currentDayData = null; // Objeto para el día actual que se está procesando en esta tabla
+            let currentCompetitionMatches = null;
+            let currentCompetitionName = null;
+
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            for (const row of rows) {
+                if (row.classList.contains('cabeceraTabla')) {
+                    // Si ya estábamos procesando una competición para el día actual, la guardamos.
+                    if (currentDayData && currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
+                        currentDayData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
+                    }
+                    currentCompetitionName = null; 
+                    currentCompetitionMatches = [];
+
             const td = row.querySelector('td');
             if (td) {
                 // Extraer el texto, eliminando el contenido de los spans si existen (como "AYER", "HOY", "MAÑANA")
@@ -203,9 +214,12 @@
                 cloneTd.querySelectorAll('span').forEach(span => span.remove());
                 parsedData.pageTitle = cloneTd.textContent.trim();
             }
+                    // Crear el objeto del día aquí, ya que cada 'cabeceraTabla' inicia un nuevo día.
+                    currentDayData = { dateTitle: parsedData.pageTitle, competitions: [] };
+
           } else if (row.classList.contains('cabeceraCompericion')) {
-            if (currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
-              parsedData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
+            if (currentDayData && currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
+              currentDayData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
             }
             currentCompetitionMatches = []; // Reiniciar para la nueva competición
 
@@ -223,13 +237,13 @@
                 }
             }
 
-            if (isArgentinianCompetition) {
+            if (isArgentinianCompetition && currentDayData) { // Asegurarse de que currentDayData existe
               const a = td.querySelector('a.internalLink'); // Hacemos el selector del enlace un poco más específico
               currentCompetitionName = a ? a.textContent.trim() : 'Competición Argentina';
             } else {
               currentCompetitionName = null; // No es una competición argentina de interés
             }
-          } else if (!row.className && currentCompetitionName && currentCompetitionMatches) { // Fila de partido y estamos en una competición argentina
+          } else if (!row.className && currentDayData && currentCompetitionName && currentCompetitionMatches) { // Fila de partido y estamos en una competición argentina
             const horaEl = row.querySelector('td.hora');
             const localImgEl = row.querySelector('td.local img');
             const visitanteImgEl = row.querySelector('td.visitante img');
@@ -251,70 +265,97 @@
               currentCompetitionMatches.push({ time, local, visitor, channels: channelsText });
             }
           }
-        }
+        } // Fin del bucle de filas (rows)
 
-        // Añadir la última competición recolectada si existe
-        if (currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
-          parsedData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
-        }
+            // Al final de procesar todas las filas de un tbody (un día):
+            // Añadir la última competición recolectada para este día
+            if (currentDayData && currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
+                currentDayData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
+            }
+            
+            // Si se procesó algún dato para este día (currentDayData no es null y tiene un título)
+            if (currentDayData && currentDayData.dateTitle) {
+                // Filtrar para mantener solo competiciones con partidos argentinos
+                currentDayData.competitions = currentDayData.competitions.filter(comp => comp.matches.length > 0);
+                // Solo añadir el día si tiene competiciones argentinas o si es el primer día (para mostrar "no hay partidos hoy")
+                // O si queremos mostrar hasta 3 días aunque los siguientes no tengan partidos argentinos.
+                if (currentDayData.competitions.length > 0 || parsedDaysData.length < 3) {
+                    parsedDaysData.push(currentDayData);
+                }
+            }
+        } // Fin del bucle de tablas (mainTables)
 
         // Renderizar los datos
         container.innerHTML = ''; 
 
-        const mainTitle = document.createElement('h2');
-        mainTitle.textContent = parsedData.pageTitle;
-        mainTitle.style.color = '#ef0a6a'; // Estilo del título principal de la agenda
-        mainTitle.style.textAlign = 'center';
-        container.appendChild(mainTitle);
-
-        if (parsedData.competitions.length === 0) {
-          const noDataP = document.createElement('p');
-          noDataP.textContent = 'No hay partidos de ligas argentinas para hoy.';
-          noDataP.style.textAlign = 'center';
-          noDataP.style.padding = '20px 0';
-          container.appendChild(noDataP);
+        if (parsedDaysData.length === 0) {
+            const title = document.createElement('h2');
+            title.textContent = 'Agenda Deportiva';
+            title.style.color = '#ef0a6a';
+            title.style.textAlign = 'center';
+            container.appendChild(title);
+            const noDataP = document.createElement('p');
+            noDataP.textContent = 'No se pudo cargar la agenda o no hay partidos programados.';
+            noDataP.style.textAlign = 'center';
+            noDataP.style.padding = '20px 0';
+            container.appendChild(noDataP);
         } else {
-          parsedData.competitions.forEach(competition => {
-            const competitionTitle = document.createElement('h3');
-            competitionTitle.textContent = competition.name; // "Categoría"
-            competitionTitle.style.color = '#333'; // Un color diferente para la categoría
-            competitionTitle.style.textAlign = 'center';
-            competitionTitle.style.marginTop = '25px';
-            competitionTitle.style.marginBottom = '10px';
-            container.appendChild(competitionTitle);
+            const daysToDisplay = parsedDaysData.slice(0, 3); // Mostrar hasta 3 días
 
-            const table = document.createElement('table');
-            table.className = 'styled-agenda-table'; // Usar la nueva clase para estilos
+            daysToDisplay.forEach((day, index) => {
+                const dayTitle = document.createElement('h2');
+                dayTitle.textContent = day.dateTitle;
+                dayTitle.style.color = '#ef0a6a';
+                dayTitle.style.textAlign = 'center';
+                if (index > 0) dayTitle.style.marginTop = '40px'; // Añadir margen para separar los días
+                container.appendChild(dayTitle);
 
-            const thead = document.createElement('thead');
-            const headRow = document.createElement('tr');
-            ['Partido', 'Horario', 'Canales'].forEach(txt => {
-              const th = document.createElement('th');
-              th.textContent = txt;
-              headRow.appendChild(th);
+                if (day.competitions.length === 0) {
+                    const noDataP = document.createElement('p');
+                    noDataP.textContent = `No hay partidos de ligas argentinas para este día.`;
+                    noDataP.style.textAlign = 'center';
+                    noDataP.style.padding = '20px 0';
+                    container.appendChild(noDataP);
+                } else {
+                    day.competitions.forEach(competition => {
+                        const competitionTitle = document.createElement('h3');
+                        competitionTitle.textContent = competition.name;
+                        competitionTitle.style.color = '#333';
+                        competitionTitle.style.textAlign = 'center';
+                        competitionTitle.style.marginTop = '25px';
+                        competitionTitle.style.marginBottom = '10px';
+                        container.appendChild(competitionTitle);
+
+                        const tableElement = document.createElement('table'); // Renombrado para evitar conflicto
+                        tableElement.className = 'styled-agenda-table';
+
+                        const thead = document.createElement('thead');
+                        const headRow = document.createElement('tr');
+                        ['Partido', 'Horario', 'Canales'].forEach(txt => {
+                            const th = document.createElement('th');
+                            th.textContent = txt;
+                            headRow.appendChild(th);
+                        });
+                        thead.appendChild(headRow);
+                        tableElement.appendChild(thead);
+
+                        const tbodyTable = document.createElement('tbody');
+                        competition.matches.forEach(match => {
+                            const tr = document.createElement('tr');
+                            const tdMatch = document.createElement('td');
+                            tdMatch.textContent = `${match.local} vs ${match.visitor}`;
+                            const tdTime = document.createElement('td');
+                            tdTime.textContent = match.time;
+                            const tdChan = document.createElement('td');
+                            tdChan.textContent = match.channels;
+                            tr.append(tdMatch, tdTime, tdChan);
+                            tbodyTable.appendChild(tr);
+                        });
+                        tableElement.appendChild(tbodyTable);
+                        container.appendChild(tableElement);
+                    });
+                }
             });
-            thead.appendChild(headRow);
-            table.appendChild(thead);
-
-            const tbody = document.createElement('tbody');
-            competition.matches.forEach(match => {
-              const tr = document.createElement('tr');
-
-              const tdMatch = document.createElement('td');
-              tdMatch.textContent = `${match.local} vs ${match.visitor}`;
-
-              const tdTime = document.createElement('td');
-              tdTime.textContent = match.time;
-
-              const tdChan = document.createElement('td');
-              tdChan.textContent = match.channels;
-
-              tr.append(tdMatch, tdTime, tdChan);
-              tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-            container.appendChild(table);
-          });
         }
 
       } catch (err) {
