@@ -164,11 +164,12 @@
       container.innerHTML = '<h2>Cargando agenda...</h2>'; 
 
       try {
-        // const proxy = 'https://api.allorigins.win/raw?url='; // Proxy anterior
-        const proxy = 'https://corsproxy.io/?'; // Nuevo proxy alternativo
+        // const proxy = 'https://api.allorigins.win/raw?url='; // Proxy 1
+        // const proxy = 'https://corsproxy.io/?'; // Proxy 2
+        const proxy = 'https://thingproxy.freeboard.io/fetch/'; // Proxy 3
         const targetUrl = 'https://www.futbolenvivoargentina.com/';
 
-        const response = await fetch(proxy + encodeURIComponent(targetUrl));
+        const response = await fetch(proxy + targetUrl); // Para thingproxy, la URL de destino no suele necesitar encodeURIComponent si se concatena así.
         if (!response.ok) {
           throw new Error(`Error al cargar datos desde ${targetUrl}: ${response.statusText}`);
         }
