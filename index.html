@@ -166,10 +166,11 @@
       try {
         // const proxy = 'https://api.allorigins.win/raw?url='; // Proxy 1
         // const proxy = 'https://corsproxy.io/?'; // Proxy 2
-        const proxy = 'https://thingproxy.freeboard.io/fetch/'; // Proxy 3
+        // const proxy = 'https://thingproxy.freeboard.io/fetch/'; // Proxy 3
+        const proxy = 'https://api.codetabs.com/v1/proxy/?quest='; // Proxy 4
         const targetUrl = 'https://www.futbolenvivoargentina.com/';
 
-        const response = await fetch(proxy + targetUrl); // Para thingproxy, la URL de destino no suele necesitar encodeURIComponent si se concatena así.
+        const response = await fetch(proxy + targetUrl); // Para api.codetabs, la URL se pasa como parámetro 'quest'
         if (!response.ok) {
           throw new Error(`Error al cargar datos desde ${targetUrl}: ${response.statusText}`);
         }
