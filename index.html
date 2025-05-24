@@ -331,6 +331,17 @@
             if (currentDayData && currentDayData.dateTitle) {
                 // Filtrar para mantener solo competiciones con partidos argentinos
                 currentDayData.competitions = currentDayData.competitions.filter(comp => comp.matches.length > 0);
+
+                // Ordenar las competiciones por la hora de su primer partido
+                if (currentDayData.competitions.length > 1) {
+                    currentDayData.competitions.sort((compA, compB) => {
+                        const timeA = compA.matches[0].time; // El primer partido ya está ordenado dentro de la competición
+                        const timeB = compB.matches[0].time;
+                        const minutesA = parseInt(timeA.split(':')[0]) * 60 + parseInt(timeA.split(':')[1]);
+                        const minutesB = parseInt(timeB.split(':')[0]) * 60 + parseInt(timeB.split(':')[1]);
+                        return minutesA - minutesB;
+                    });
+                }
                 // Solo añadir el día si tiene competiciones argentinas o si es el primer día (para mostrar "no hay partidos hoy")
                 // O si queremos mostrar hasta 3 días aunque los siguientes no tengan partidos argentinos.
                 if (currentDayData.competitions.length > 0 || parsedDaysData.length < 3) {
@@ -440,7 +451,7 @@
     updateAgenda();
 
     // Establece un intervalo para llamar a updateAgenda cada minuto (60000 ms)
-    setInterval(updateAgenda, 60000);
+    // setInterval(updateAgenda, 60000); // Eliminado para evitar actualización automática
   </script>
 </body>
 </html>
