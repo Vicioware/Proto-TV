@@ -60,11 +60,20 @@
       object-fit: cover; /* Mantenemos cover por si acaso, pero con height:auto no debería ser necesario */
       border-radius: 12px; 
     }
-    #agenda-container { width: 100%; max-width: 900px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; }
-    #agenda-container h2 { margin-top: 0; color: #ef0a6a; text-align: center; }
-    #agenda-table { width: 100%; border-collapse: collapse; }
-    #agenda-table th, #agenda-table td { border: 1px solid #ddd; padding: 8px; }
-    #agenda-table th { background: #f5f5f5; }
+    #agenda-container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px; /* Espacio entre los cuadros de cada día */
+    }
+    .day-schedule-box {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .day-schedule-box > h2 { margin-top: 0; color: #ef0a6a; text-align: center; } /* Título del día */
     /* Estilos para las nuevas tablas de agenda (una por competición) */
     .styled-agenda-table {
       width: 100%;
@@ -245,6 +254,13 @@
           } else if (row.classList.contains('cabeceraCompericion')) {
             if (currentDayData && currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
               currentDayData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
+              // Ordenar los partidos de la competición recién añadida
+              const lastCompetition = currentDayData.competitions[currentDayData.competitions.length - 1];
+              lastCompetition.matches.sort((a, b) => {
+                const minutesA = parseInt(a.time.split(':')[0]) * 60 + parseInt(a.time.split(':')[1]);
+                const minutesB = parseInt(b.time.split(':')[0]) * 60 + parseInt(b.time.split(':')[1]);
+                return minutesA - minutesB;
+              });
             }
             currentCompetitionMatches = []; // Reiniciar para la nueva competición
 
@@ -302,6 +318,12 @@
             // Al final de procesar todas las filas de un tbody (un día):
             // Añadir la última competición recolectada para este día
             if (currentDayData && currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
+                // Ordenar los partidos de la última competición antes de añadirla
+                currentCompetitionMatches.sort((a, b) => {
+                    const minutesA = parseInt(a.time.split(':')[0]) * 60 + parseInt(a.time.split(':')[1]);
+                    const minutesB = parseInt(b.time.split(':')[0]) * 60 + parseInt(b.time.split(':')[1]);
+                    return minutesA - minutesB;
+                });
                 currentDayData.competitions.push({ name: currentCompetitionName, matches: currentCompetitionMatches });
             }
             
@@ -318,45 +340,47 @@
         } // Fin del bucle de tablas (mainTables)
 
         // Renderizar los datos
-        container.innerHTML = ''; 
+        const agendaOuterContainer = document.getElementById('agenda-container');
+        agendaOuterContainer.innerHTML = ''; 
 
         if (parsedDaysData.length === 0) {
             const title = document.createElement('h2');
             title.textContent = 'Agenda Deportiva';
             title.style.color = '#ef0a6a';
             title.style.textAlign = 'center';
-            container.appendChild(title);
+            agendaOuterContainer.appendChild(title); // Añadir al contenedor principal
             const noDataP = document.createElement('p');
             noDataP.textContent = 'No se pudo cargar la agenda o no hay partidos programados.';
             noDataP.style.textAlign = 'center';
             noDataP.style.padding = '20px 0';
-            container.appendChild(noDataP);
+            agendaOuterContainer.appendChild(noDataP); // Añadir al contenedor principal
         } else {
             const daysToDisplay = parsedDaysData.slice(0, 3); // Mostrar hasta 3 días
 
             daysToDisplay.forEach((day, index) => {
+                const dayBox = document.createElement('section');
+                dayBox.className = 'day-schedule-box';
+
                 const dayTitle = document.createElement('h2');
                 dayTitle.textContent = day.dateTitle;
-                dayTitle.style.color = '#ef0a6a';
-                dayTitle.style.textAlign = 'center';
-                if (index > 0) dayTitle.style.marginTop = '40px'; // Añadir margen para separar los días
-                container.appendChild(dayTitle);
+                // Los estilos de h2 dentro de day-schedule-box se manejan por CSS
+                dayBox.appendChild(dayTitle);
 
                 if (day.competitions.length === 0) {
                     const noDataP = document.createElement('p');
                     noDataP.textContent = `No hay partidos de ligas argentinas para este día.`;
                     noDataP.style.textAlign = 'center';
                     noDataP.style.padding = '20px 0';
-                    container.appendChild(noDataP);
+                    dayBox.appendChild(noDataP);
                 } else {
                     day.competitions.forEach(competition => {
                         const competitionTitle = document.createElement('h3');
                         competitionTitle.textContent = competition.name;
-                        competitionTitle.style.color = '#00008B'; // Azul oscuro
+                        competitionTitle.style.color = '#004069'; // Nuevo azul oscuro
                         competitionTitle.style.textAlign = 'center';
                         competitionTitle.style.marginTop = '25px';
                         competitionTitle.style.marginBottom = '10px';
-                        container.appendChild(competitionTitle);
+                        dayBox.appendChild(competitionTitle);
 
                         const tableElement = document.createElement('table'); // Renombrado para evitar conflicto
                         tableElement.className = 'styled-agenda-table';
@@ -371,7 +395,7 @@
                         thead.appendChild(headRow);
                         tableElement.appendChild(thead);
 
-                        const tbodyTable = document.createElement('tbody');
+                        const tableBody = document.createElement('tbody'); // Renombrado para claridad
                         competition.matches.forEach(match => {
                             const tr = document.createElement('tr');
                             const tdMatch = document.createElement('td');
@@ -381,29 +405,30 @@
                             const tdChan = document.createElement('td');
                             tdChan.textContent = match.channels;
                             tr.append(tdMatch, tdTime, tdChan);
-                            tbodyTable.appendChild(tr);
+                            tableBody.appendChild(tr);
                         });
-                        tableElement.appendChild(tbodyTable);
-                        container.appendChild(tableElement);
+                        tableElement.appendChild(tableBody);
+                        dayBox.appendChild(tableElement);
                     });
                 }
+                agendaOuterContainer.appendChild(dayBox); // Añadir el cuadro del día completo al contenedor principal
             });
         }
 
       } catch (err) {
         // Manejo de errores (si fallan todas las peticiones o hay otro error)
-        container.innerHTML = ''; // Limpiar por si acaso
+        agendaOuterContainer.innerHTML = ''; // Limpiar por si acaso
         const title = document.createElement('h2');
         title.textContent = 'Agenda Deportiva'; // Título genérico en caso de error
         title.style.color = '#ef0a6a';
         title.style.textAlign = 'center';
-        container.appendChild(title);
+        agendaOuterContainer.appendChild(title);
         const errorP = document.createElement('p');
         errorP.textContent = 'Error al cargar la agenda.';
         errorP.className = 'error-message'; 
         errorP.style.textAlign = 'center';
         errorP.style.padding = '20px 0';
-        container.appendChild(errorP);
+        agendaOuterContainer.appendChild(errorP);
         console.error('Error actualizando agenda:', err);
       }
     }
