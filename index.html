@@ -66,10 +66,34 @@
     #agenda-table th, #agenda-table td { border: 1px solid #ddd; padding: 8px; }
     #agenda-table th { background: #f5f5f5; }
     /* Estilos para las nuevas tablas de agenda (una por competición) */
-    .styled-agenda-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    .styled-agenda-table th, .styled-agenda-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    .styled-agenda-table th { background: #f5f5f5; }
-    .styled-agenda-table td:nth-child(2) { text-align: center; } /* Centrar Horario */
+    .styled-agenda-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      table-layout: fixed; /* Ayuda a que los anchos de columna sean más consistentes */
+    }
+    .styled-agenda-table th, .styled-agenda-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      word-wrap: break-word; /* Para evitar que texto largo rompa el diseño */
+    }
+    .styled-agenda-table th {
+      background: #f5f5f5;
+      text-align: left; /* Alineación por defecto para cabeceras */
+    }
+
+    /* Anchos y alineaciones específicas de columnas */
+    .styled-agenda-table th:nth-child(1), /* Partido - Cabecera y Celda */
+    .styled-agenda-table td:nth-child(1) {
+      width: 50%; /* Más amplio */
+    }
+    .styled-agenda-table th:nth-child(2), /* Horario - Cabecera y Celda */
+    .styled-agenda-table td:nth-child(2) {
+      width: 15%; /* Pequeño - Ajustado para que sea más pequeño */
+      text-align: center;
+    }
+    .styled-agenda-table th:nth-child(3) { width: 35%; text-align: right; } /* Canales - Cabecera */
+    .styled-agenda-table td:nth-child(3) { width: 35%; text-align: left; } /* Canales - Contenido */
     @media (max-width: 700px) {
       body { padding: 20px 15px; padding-top: 90px; }
       .site-logo-link { position: absolute; top: 15px; left: 15px; } /* Ajustado para móvil */
@@ -239,8 +263,15 @@
             }
 
             if (isArgentinianCompetition && currentDayData) { // Asegurarse de que currentDayData existe
-              const a = td.querySelector('a.internalLink'); // Hacemos el selector del enlace un poco más específico
-              currentCompetitionName = a ? a.textContent.trim() : 'Competición Argentina';
+              const a = td.querySelector('a.internalLink');
+              let tempCompetitionName = a ? a.textContent.trim() : 'Competición Argentina';
+              
+              // Filtrar competiciones que contengan "Femenino"
+              if (tempCompetitionName.toLowerCase().includes('femenino')) {
+                  currentCompetitionName = null; // Marcar para no procesar esta competición
+              } else {
+                  currentCompetitionName = tempCompetitionName;
+              }
             } else {
               currentCompetitionName = null; // No es una competición argentina de interés
             }
@@ -321,7 +352,7 @@
                     day.competitions.forEach(competition => {
                         const competitionTitle = document.createElement('h3');
                         competitionTitle.textContent = competition.name;
-                        competitionTitle.style.color = '#333';
+                        competitionTitle.style.color = '#00008B'; // Azul oscuro
                         competitionTitle.style.textAlign = 'center';
                         competitionTitle.style.marginTop = '25px';
                         competitionTitle.style.marginBottom = '10px';
