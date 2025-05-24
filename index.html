@@ -208,14 +208,15 @@
                     currentCompetitionMatches = [];
 
             const td = row.querySelector('td');
+            let dayTitleText = "Partidos"; // Título por defecto para el día
             if (td) {
                 // Extraer el texto, eliminando el contenido de los spans si existen (como "AYER", "HOY", "MAÑANA")
                 const cloneTd = td.cloneNode(true);
                 cloneTd.querySelectorAll('span').forEach(span => span.remove());
-                parsedData.pageTitle = cloneTd.textContent.trim();
+                dayTitleText = cloneTd.textContent.trim(); // Guardar el título extraído en una variable local
             }
                     // Crear el objeto del día aquí, ya que cada 'cabeceraTabla' inicia un nuevo día.
-                    currentDayData = { dateTitle: parsedData.pageTitle, competitions: [] };
+                    currentDayData = { dateTitle: dayTitleText, competitions: [] }; // Usar la variable local
 
           } else if (row.classList.contains('cabeceraCompericion')) {
             if (currentDayData && currentCompetitionName && currentCompetitionMatches && currentCompetitionMatches.length > 0) {
